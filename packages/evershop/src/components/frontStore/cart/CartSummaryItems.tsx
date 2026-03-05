@@ -11,7 +11,7 @@ const CartSummarySkeleton: React.FC<{ rows?: number }> = ({ rows = 2 }) => {
       {Array.from({ length: rows }).map((_, i) => (
         <li key={i} className="flex items-center py-6 animate-pulse">
           <div className="relative mr-4">
-            <div className="w-16 h-16 bg-gray-200 rounded border border-border p-2 box-border" />
+            <div className="w-16 h-16 bg-muted rounded border border-border p-2 box-border" />
             <span className="absolute -top-2 -right-2 bg-muted rounded-full w-6 h-6 flex items-center justify-center text-muted-foreground text-sm">
               {i + 1}
             </span>

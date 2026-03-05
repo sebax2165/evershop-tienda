@@ -11,7 +11,8 @@
 
   body {
     font-size: 100%;
-    color: #3a3a3a;
+    color: var(--foreground);
+    background-color: var(--background);
     input[type='email'],
     input[type='password'],
     input[type='tel'],
@@ -19,6 +20,9 @@
     select,
     textarea {
       padding: 0.625rem 0.75rem;
+      background-color: var(--card);
+      color: var(--foreground);
+      border-color: var(--border);
     }
 
     main.content {

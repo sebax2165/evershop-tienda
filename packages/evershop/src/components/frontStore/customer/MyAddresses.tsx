@@ -105,7 +105,7 @@ export function MyAddresses({ title }: { title?: string }) {
   return (
     <div>
       {title && (
-        <div className="border-b mb-5 border-gray-200">
+        <div className="border-b mb-5 border-border">
           <h2>{_('Address Book')}</h2>
         </div>
       )}

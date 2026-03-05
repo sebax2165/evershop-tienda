@@ -65,10 +65,10 @@ export const DefaultMiniCartDropdown: React.FC<{
               {({ total }) => (
                 <>
                   <div className="minicart__summary flex justify-between items-center mb-3">
-                    <span className="font-medium text-gray-900">
+                    <span className="font-medium text-foreground">
                       {_('Subtotal')}:
                     </span>
-                    <span className="font-semibold text-lg text-gray-900">
+                    <span className="font-semibold text-lg text-foreground">
                       {total || '—'}
                     </span>
                   </div>

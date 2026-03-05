@@ -15,7 +15,7 @@ function renderHtml(route, js, css, contextData, langeCode) {
     </AppProvider>
   );
 
-  return `<!DOCTYPE html><html id="root" lang="${langeCode}">${source}</html>`;
+  return `<!DOCTYPE html><html id="root" lang="${langeCode}" class="dark">${source}</html>`;
 }
 
 export { renderHtml };

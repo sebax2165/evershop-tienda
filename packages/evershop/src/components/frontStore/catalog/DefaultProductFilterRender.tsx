@@ -88,7 +88,7 @@ export const DefaultProductFilterRender: React.FC<{
     <ProductFilterDispatch.Provider value={contextValue}>
       <button
         onClick={() => setIsMobileFilterOpen(true)}
-        className="md:hidden w-full flex items-center justify-center space-x-2 py-3 px-4 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors"
+        className="md:hidden w-full flex items-center justify-center space-x-2 py-3 px-4 border border-border rounded-md bg-background hover:bg-muted transition-colors"
       >
         <svg
           className="w-5 h-5"

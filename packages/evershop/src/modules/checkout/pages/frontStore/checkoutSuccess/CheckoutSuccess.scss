@@ -9,7 +9,7 @@
       }
     }
     label {
-      color: var(--textSubdued);
+      color: var(--muted-foreground);
     }
   }
   a.button {
@@ -38,7 +38,7 @@
 }
 .thank-you {
   .check {
-    border: 2px solid var(--interactive);
+    border: 2px solid var(--primary);
     border-radius: 100%;
     padding: 0.313rem;
   }

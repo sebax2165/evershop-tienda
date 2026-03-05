@@ -31,7 +31,7 @@ export default function LoginPage({
         </CardContent>
       </Card>
       <div className="login__page__options text-center mt-2 gap-5 flex justify-center">
-        <a className="text-interactive hover:underline" href={registerUrl}>
+        <a className="text-primary hover:underline" href={registerUrl}>
           {_('Create an account')}
         </a>
         <a

@@ -121,7 +121,7 @@ function ResetForm({ action }: ResetFormProps) {
     <ResetPasswordForm
       title={_('Reset Your Password')}
       subtitle={_('Please enter your email to receive a reset link')}
-      className="w-120 max-w-max md:max-w-[80%] bg-white rounded-3xl p-6 shadow-lg border border-divider"
+      className="w-120 max-w-max md:max-w-[80%] bg-card rounded-3xl p-6 shadow-lg border border-divider"
       action={action}
       onSuccess={() => {
         setSuccess(true);

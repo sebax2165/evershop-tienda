@@ -27,7 +27,7 @@ const TestCards: React.FC<{
     <div>
       <div
         style={{
-          border: '1px solid #dddddd',
+          border: '1px solid var(--border)',
           borderRadius: '3px',
           padding: '5px',
           boxSizing: 'border-box',
@@ -39,11 +39,11 @@ const TestCards: React.FC<{
             <div>
               <b>Test success:</b>
             </div>
-            <div className="text-xs text-gray-600">
+            <div className="text-xs text-muted-foreground">
               Test card number: 4242 4242 4242 4242
             </div>
-            <div className="text-xs text-gray-600">Test card expiry: 04/26</div>
-            <div className="text-xs text-gray-600">Test card CVC: 242</div>
+            <div className="text-xs text-muted-foreground">Test card expiry: 04/26</div>
+            <div className="text-xs text-muted-foreground">Test card CVC: 242</div>
           </div>
         )}
         {showTestCard === 'failure' && (
@@ -51,11 +51,11 @@ const TestCards: React.FC<{
             <div>
               <b>Test failure:</b>
             </div>
-            <div className="text-xs text-gray-600">
+            <div className="text-xs text-muted-foreground">
               Test card number: 4000 0000 0000 9995
             </div>
-            <div className="text-xs text-gray-600">Test card expiry: 04/26</div>
-            <div className="text-xs text-gray-600">Test card CVC: 242</div>
+            <div className="text-xs text-muted-foreground">Test card expiry: 04/26</div>
+            <div className="text-xs text-muted-foreground">Test card CVC: 242</div>
           </div>
         )}
       </div>

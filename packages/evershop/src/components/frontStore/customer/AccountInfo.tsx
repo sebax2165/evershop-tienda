@@ -21,7 +21,7 @@ export default function AccountInfo({ title, showLogout }: AccountInfoProps) {
         {title && <h2>{title}</h2>}
         {showLogout && (
           <a
-            className="text-interactive"
+            className="text-primary"
             href="#"
             onClick={async (e) => {
               e.preventDefault();

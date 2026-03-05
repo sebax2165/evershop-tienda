@@ -87,7 +87,7 @@ function renderDevelopment(
   const langCode = request.currentRoute?.isAdmin ? 'en' : language;
   const scriptPath = route.isAdmin ? '/backend/admin-main.js' : '/main.js';
   response.send(`
-            <!doctype html><html lang="${langCode}">
+            <!doctype html><html lang="${langCode}" class="dark">
                 <head>
                   <script>var eContext = ${safeContextValue}</script>
                 </head>

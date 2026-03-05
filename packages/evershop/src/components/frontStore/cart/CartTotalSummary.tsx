@@ -151,7 +151,7 @@ const Shipping: React.FC<{
       {noShippingRequired && (
         <>
           <span>{_('Shipping')}</span>
-          <span className="text-gray-500 italic font-normal">
+          <span className="text-muted-foreground italic font-normal">
             {_('No shipping required')}
           </span>
         </>
@@ -167,7 +167,7 @@ const Shipping: React.FC<{
       {!method && !noShippingRequired && (
         <>
           <span>{_('Shipping')}</span>
-          <span className="text-gray-500 italic font-normal">
+          <span className="text-muted-foreground italic font-normal">
             {_('Select shipping method')}
           </span>
         </>

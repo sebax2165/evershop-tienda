@@ -91,7 +91,7 @@ const Shipping: React.FC<{
       {!method && (
         <>
           <span>{_('Shipping')}</span>
-          <span className="text-gray-500 italic font-normal">
+          <span className="text-muted-foreground italic font-normal">
             {_('No shipping is required for this order')}
           </span>
         </>

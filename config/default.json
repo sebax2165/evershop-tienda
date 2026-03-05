@@ -1,0 +1,9 @@
+{
+  "shop": {
+    "currency": "USD",
+    "language": "en",
+    "weightUnit": "kg",
+    "timezone": "UTC",
+    "homeUrl": "https://evershop-tienda-production.up.railway.app"
+  }
+}

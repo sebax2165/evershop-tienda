@@ -143,7 +143,7 @@ export const DefaultCategoryFilterRender: React.FC<{
                 );
               })
             ) : (
-              <div className="text-gray-500 text-sm text-center py-4">
+              <div className="text-muted-foreground text-sm text-center py-4">
                 {_('No categories found for "${term}"', { term: searchTerm })}
               </div>
             )}

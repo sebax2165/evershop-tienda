@@ -59,7 +59,7 @@ export default function CustomerInfo({
   return (
     <div className="checkout-success-customer-info">
       <h3 className="thank-you flex justify-start space-x-5">
-        <div className="check flex justify-center self-center text-interactive">
+        <div className="check flex justify-center self-center text-primary">
           <svg
             style={{ width: '3rem', height: '3rem' }}
             xmlns="http://www.w3.org/2000/svg"
@@ -94,16 +94,16 @@ export default function CustomerInfo({
             <div className="mb-2">
               <h3>{_('Contact information')}</h3>
             </div>
-            <div className="text-textSubdued">
+            <div className="text-muted-foreground">
               {customerFullName || billingAddress?.fullName}
             </div>
-            <div className="text-textSubdued">{customerEmail}</div>
+            <div className="text-muted-foreground">{customerEmail}</div>
           </div>
           <div>
             <div className="mb-2">
               <h3>{_('Shipping Address')}</h3>
             </div>
-            <div className="text-textSubdued">
+            <div className="text-muted-foreground">
               {noShippingRequired ? (
                 _('No shipping required')
               ) : (
@@ -115,13 +115,13 @@ export default function CustomerInfo({
             <div className="mb-2">
               <h3>{_('Payment Method')}</h3>
             </div>
-            <div className="text-textSubdued">{paymentMethodName}</div>
+            <div className="text-muted-foreground">{paymentMethodName}</div>
           </div>
           <div>
             <div className="mb-2">
               <h3>{_('Billing Address')}</h3>
             </div>
-            <div className="text-textSubdued">
+            <div className="text-muted-foreground">
               <AddressSummary address={billingAddress} />
             </div>
           </div>

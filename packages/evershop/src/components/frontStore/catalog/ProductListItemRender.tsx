@@ -55,7 +55,7 @@ export const ProductListItemRender = ({
               </a>
             </h3>
 
-            <div className="product__list__sku text-sm text-gray-600 mb-2">
+            <div className="product__list__sku text-sm text-muted-foreground mb-2">
               {_('SKU ${sku}', { sku: product.sku })}
             </div>
 
@@ -64,14 +64,13 @@ export const ProductListItemRender = ({
               product.price.regular < product.price.special ? (
                 <div className="flex items-center gap-2">
                   <span
-                    className="regular-price text-sm"
-                    style={{ textDecoration: 'line-through', color: '#777' }}
+                    className="regular-price text-sm text-muted-foreground"
+                    style={{ textDecoration: 'line-through' }}
                   >
                     {product.price.regular.text}
                   </span>
                   <span
-                    className="special-price text-lg font-bold"
-                    style={{ color: '#e53e3e' }}
+                    className="special-price text-lg font-bold text-destructive"
                   >
                     {product.price.special.text}
                   </span>
@@ -85,11 +84,11 @@ export const ProductListItemRender = ({
 
             <div className="product__list__stock mb-3">
               {product.inventory.isInStock ? (
-                <span className="text-green-600 text-sm font-medium">
+                <span className="text-green-600 dark:text-green-400 text-sm font-medium">
                   {_('In Stock')}
                 </span>
               ) : (
-                <span className="text-red-600 text-sm font-medium">
+                <span className="text-destructive text-sm font-medium">
                   {_('Out of Stock')}
                 </span>
               )}

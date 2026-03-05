@@ -274,7 +274,7 @@ export function SearchBox({
         {renderSearchIcon ? renderSearchIcon() : defaultSearchIcon()}
       </a>
       {showing && (
-        <div className="search__input__container fixed top-0 left-0 right-0 bottom-0 bg-white shadow-md z-50 p-10">
+        <div className="search__input__container fixed top-0 left-0 right-0 bottom-0 bg-background shadow-md z-50 p-10">
           <div className="search__input relative flex justify-between">
             {renderSearchInput
               ? renderSearchInput({
@@ -364,14 +364,14 @@ const defaultSearchResults = (props: {
   isLoading: boolean;
 }) => {
   return (
-    <div className="search__results absolute top-full left-0 right-0 bg-white border border-border rounded-b-lg shadow-lg z-50 max-h-64 overflow-y-auto">
+    <div className="search__results absolute top-full left-0 right-0 bg-background border border-border rounded-b-lg shadow-lg z-50 max-h-64 overflow-y-auto">
       {props.isLoading && (
-        <div className="p-3 text-center text-gray-500">
+        <div className="p-3 text-center text-muted-foreground">
           <span>Searching...</span>
         </div>
       )}
       {!props.isLoading && props.results.length === 0 && (
-        <div className="p-3 text-center text-gray-500">
+        <div className="p-3 text-center text-muted-foreground">
           <span>No results found for &ldquo;{props.query}&rdquo;</span>
         </div>
       )}
@@ -379,7 +379,7 @@ const defaultSearchResults = (props: {
         props.results.map((result) => (
           <div
             key={result.id}
-            className="flex items-center p-3 hover:bg-gray-50 cursor-pointer border-b border-border last:border-b-0"
+            className="flex items-center p-3 hover:bg-muted cursor-pointer border-b border-border last:border-b-0"
             onClick={(e) => {
               e.preventDefault();
               props.onSelect(result);
@@ -406,7 +406,7 @@ const defaultSearchResults = (props: {
               <div className="font-medium truncate">{result.title}</div>
               {result.price && <div className="text-sm">{result.price}</div>}
               {result.type && (
-                <div className="text-xs text-gray-400 capitalize">
+                <div className="text-xs text-muted-foreground capitalize">
                   {result.type}
                 </div>
               )}

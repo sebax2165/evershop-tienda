@@ -52,7 +52,7 @@ const OrderSummaryItems: React.FC<{
                 {item.variantOptions.map((option) => (
                   <div
                     key={option.attributeCode}
-                    className="text-xs text-gray-700"
+                    className="text-xs text-muted-foreground"
                   >
                     {option.attributeName}: {option.optionText}
                   </div>

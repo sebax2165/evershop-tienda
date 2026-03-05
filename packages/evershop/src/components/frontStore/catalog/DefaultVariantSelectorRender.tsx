@@ -46,7 +46,7 @@ const DefaultVariantAttribute: React.FC<VariantAttributeGroupProps> = ({
 }) => {
   return (
     <div key={attribute.attributeCode}>
-      <div className="mb-2 text-textSubdued uppercase">
+      <div className="mb-2 text-muted-foreground uppercase">
         <span>{attribute.attributeName}</span>
       </div>
       <ul className="variant-option-list flex justify-start gap-2 flex-wrap">

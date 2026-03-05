@@ -133,7 +133,7 @@ export function BillingAddress({
 
                     {!useSameAddress && (
                       <ItemDescription className="text-inherit mt-3 overflow-visible">
-                        <div className="text-inherit bg-white">
+                        <div className="text-inherit bg-background">
                           <CustomerAddressForm
                             areaId="checkoutBillingAddressForm"
                             fieldNamePrefix="billingAddress"
@@ -156,7 +156,7 @@ export function BillingAddress({
               </>
             ) : (
               <ItemDescription className="text-inherit mt-3 overflow-visible">
-                <div className="text-inherit bg-white">
+                <div className="text-inherit bg-background">
                   <CustomerAddressForm
                     areaId="checkoutBillingAddressForm"
                     fieldNamePrefix="billingAddress"
