@@ -1,0 +1,70 @@
+body .codex-editor {
+  z-index: 99;
+}
+
+#rows {
+  .row {
+    background-color: #fff;
+  }
+
+  .row__container {
+    &:hover,
+    &:focus-within {
+      z-index: 100 !important;
+    }
+  }
+
+  .drag__icon {
+    cursor: move;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+
+    &:hover {
+      background-color: #e0e0e0;
+    }
+
+    svg {
+      display: block; // Prevent extra space below svg
+    }
+  }
+}
+
+.item {
+  padding: 10px;
+  background: var(--divider);
+  border: 2px solid var(--border);
+}
+
+#rows .draggable-source--is-dragging {
+  background: var(--divider);
+  color: var(--divider);
+}
+
+#rows .draggable-source--is-dragging > * {
+  visibility: hidden;
+}
+
+.ce-rawtool__textarea {
+  z-index: 0;
+  min-height: 200px;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: vertical;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+}
+
+.ce-rawtool {
+  margin: 0.5em 0;
+}

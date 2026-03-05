@@ -1,0 +1,41 @@
+import { Button } from '@components/common/ui/Button.js';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@components/common/ui/Dialog.js';
+import { Cog } from 'lucide-react';
+import React from 'react';
+import { VariantGroup } from '../VariantGroup.js';
+import { VariantModal } from './VariantModal.js';
+import { VariantItem } from './Variants.js';
+
+export const EditVariant: React.FC<{
+  variant: VariantItem;
+  refresh: () => void;
+  variantGroup: VariantGroup;
+}> = ({ variant, variantGroup }) => {
+  return (
+    <div>
+      <Dialog>
+        <DialogTrigger>
+          <Button variant={'link'} className={'hover:cursor-pointer'}>
+            <Cog className="w-5 h-5 text-primary" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent className={'sm:max-w-212.5'}>
+          <DialogHeader>
+            <DialogTitle>Edit Variant</DialogTitle>
+            <DialogDescription>
+              Update the variant details and attributes here.
+            </DialogDescription>
+          </DialogHeader>
+          <VariantModal variant={variant} variantGroup={variantGroup} />
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};

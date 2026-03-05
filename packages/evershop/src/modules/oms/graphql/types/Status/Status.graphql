@@ -1,0 +1,36 @@
+"""
+Represents a payment status.
+"""
+type Status {
+  name: String
+  code: String
+  badge: String
+}
+
+"""
+Represents a payment status.
+"""
+type PaymentStatus {
+  name: String
+  code: String
+  badge: String
+  isDefault: Boolean
+  isCancelable: Boolean
+}
+
+"""
+Represents a shipment status.
+"""
+type ShipmentStatus {
+  name: String
+  code: String
+  badge: String
+  isDefault: Boolean
+  isCancelable: Boolean
+}
+
+extend type Query {
+  shipmentStatusList: [ShipmentStatus]
+  paymentStatusList: [PaymentStatus]
+  statusList: [Status]
+}
