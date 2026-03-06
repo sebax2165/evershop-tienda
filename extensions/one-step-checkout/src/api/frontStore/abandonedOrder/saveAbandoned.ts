@@ -3,11 +3,11 @@ import {
 } from '@evershop/postgres-query-builder';
 import {
   pool
-} from '@evershop/evershop/src/lib/postgres/connection.js';
+} from '@evershop/evershop/lib/postgres';
 import {
   OK,
   INTERNAL_SERVER_ERROR
-} from '@evershop/evershop/src/lib/util/httpStatus.js';
+} from '@evershop/evershop/lib/util/httpStatus';
 
 export default async (request, response, next) => {
   try {

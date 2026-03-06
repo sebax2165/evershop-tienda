@@ -1,5 +1,5 @@
 import { select } from '@evershop/postgres-query-builder';
-import { camelCase } from '@evershop/evershop/src/lib/util/camelCase.js';
+import { camelCase } from '@evershop/evershop/lib/util/camelCase';
 
 export default {
   Product: {

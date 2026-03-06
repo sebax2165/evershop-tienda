@@ -1,7 +1,6 @@
 import { select } from '@evershop/postgres-query-builder';
-import { pool } from '@evershop/evershop/src/lib/postgres/connection.js';
-import { setContextValue } from '@evershop/evershop/src/modules/graphql/services/contextHelper.js';
-import { setPageMetaInfo } from '@evershop/evershop/src/modules/cms/services/pageMetaInfo.js';
+import { pool } from '@evershop/evershop/lib/postgres';
+import { setContextValue } from '@evershop/evershop/graphql/services';
 
 export default async (request, response, next) => {
   try {
@@ -35,7 +34,7 @@ export default async (request, response, next) => {
     setContextValue(request, 'productId', product.product_id);
     setContextValue(request, 'currentProductId', product.product_id);
     setContextValue(request, 'checkoutConfig', checkoutConfig);
-    setPageMetaInfo(request, {
+    setContextValue(request, 'pageInfo', {
       title: product.meta_title || product.name,
       description: product.meta_description || product.name
     });
