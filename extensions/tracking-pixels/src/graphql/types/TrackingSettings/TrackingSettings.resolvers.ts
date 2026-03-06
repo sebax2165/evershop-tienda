@@ -1,4 +1,4 @@
-import { getSetting } from '@evershop/evershop/modules/setting/services/setting';
+import { getSetting } from '@evershop/evershop/setting/services';
 
 export default {
   Query: {

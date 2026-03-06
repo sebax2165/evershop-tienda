@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { select } from '@evershop/postgres-query-builder';
 import { pool } from '@evershop/evershop/lib/postgres';
-import { getSetting } from '@evershop/evershop/modules/setting/services/setting';
+import { getSetting } from '@evershop/evershop/setting/services';
 import { error as logError, debug } from '@evershop/evershop/lib/log/logger';
 
 function sha256Hash(value: string): string {

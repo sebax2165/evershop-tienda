@@ -11,7 +11,7 @@ import {
   OK,
   INTERNAL_SERVER_ERROR
 } from '@evershop/evershop/lib/util/httpStatus';
-import { refreshSetting } from '@evershop/evershop/modules/setting/services/setting';
+import { refreshSetting } from '@evershop/evershop/setting/services';
 
 const ALLOWED_KEYS = [
   'trackingFacebookPixelId',

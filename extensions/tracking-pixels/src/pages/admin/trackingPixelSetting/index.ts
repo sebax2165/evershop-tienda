@@ -1,4 +1,4 @@
-import { setPageMetaInfo } from '@evershop/evershop/modules/cms/services/pageMetaInfo';
+import { setPageMetaInfo } from '@evershop/evershop/cms/services';
 
 export default (request) => {
   setPageMetaInfo(request, {
