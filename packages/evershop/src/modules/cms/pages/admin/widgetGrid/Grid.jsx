@@ -60,18 +60,18 @@ function Actions({ widgets = [], selectedIds = [] }) {
 
   const actions = [
     {
-      name: 'Disable',
+      name: 'Desactivar',
       onAction: () => {
         openAlert({
-          heading: `Disable ${selectedIds.length} widgets`,
-          content: 'Are you sure?',
+          heading: `Desactivar ${selectedIds.length} widgets`,
+          content: '¿Estas seguro?',
           primaryAction: {
-            title: 'Cancel',
+            title: 'Cancelar',
             onAction: closeAlert,
             variant: 'secondary'
           },
           secondaryAction: {
-            title: 'Disable',
+            title: 'Desactivar',
             onAction: async () => {
               await updatePages(0);
             },
@@ -81,18 +81,18 @@ function Actions({ widgets = [], selectedIds = [] }) {
       }
     },
     {
-      name: 'Enable',
+      name: 'Activar',
       onAction: () => {
         openAlert({
-          heading: `Enable ${selectedIds.length} widgets`,
-          content: 'Are you sure?',
+          heading: `Activar ${selectedIds.length} widgets`,
+          content: '¿Estas seguro?',
           primaryAction: {
-            title: 'Cancel',
+            title: 'Cancelar',
             onAction: closeAlert,
             variant: 'secondary'
           },
           secondaryAction: {
-            title: 'Enable',
+            title: 'Activar',
             onAction: async () => {
               await updatePages(1);
             },
@@ -102,18 +102,18 @@ function Actions({ widgets = [], selectedIds = [] }) {
       }
     },
     {
-      name: 'Delete',
+      name: 'Eliminar',
       onAction: () => {
         openAlert({
-          heading: `Delete ${selectedIds.length} widgets`,
-          content: <div>Can&apos;t be undone</div>,
+          heading: `Eliminar ${selectedIds.length} widgets`,
+          content: <div>No se puede deshacer</div>,
           primaryAction: {
-            title: 'Cancel',
+            title: 'Cancelar',
             onAction: closeAlert,
             variant: 'secondary'
           },
           secondaryAction: {
-            title: 'Delete',
+            title: 'Eliminar',
             onAction: async () => {
               await deletePages();
             },
@@ -189,7 +189,7 @@ export default function WidgetGrid({
                   default: () => (
                     <InputField
                       name="name"
-                      placeholder="Search"
+                      placeholder="Buscar"
                       defaultValue={
                         currentFilters.find((f) => f.key === 'name')?.value
                       }
@@ -226,7 +226,7 @@ export default function WidgetGrid({
               window.location.href = url.href;
             }}
           >
-            Clear Filters
+            Limpiar filtros
           </Button>
         </CardAction>
       </CardHeader>
@@ -256,7 +256,7 @@ export default function WidgetGrid({
                     component: {
                       default: () => (
                         <SortableHeader
-                          title="Name"
+                          title="Nombre"
                           name="name"
                           currentFilters={currentFilters}
                         />
@@ -268,7 +268,7 @@ export default function WidgetGrid({
                     component: {
                       default: () => (
                         <SortableHeader
-                          title="Type"
+                          title="Tipo"
                           name="type"
                           currentFilters={currentFilters}
                         />
@@ -280,7 +280,7 @@ export default function WidgetGrid({
                     component: {
                       default: () => (
                         <SortableHeader
-                          title="Status"
+                          title="Estado"
                           name="status"
                           currentFilters={currentFilters}
                         />
@@ -352,7 +352,7 @@ export default function WidgetGrid({
         </Table>
         {items.length === 0 && (
           <div className="flex w-full justify-center mt-2">
-            There is no widget to display
+            No hay widgets para mostrar
           </div>
         )}
         <GridPagination total={total} limit={limit} page={page} />

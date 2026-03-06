@@ -34,7 +34,7 @@ import {
   TableRow
 } from '@components/common/ui/Table.js';
 import axios from 'axios';
-import { Check } from 'lucide-react';
+import { Check, ExternalLink } from 'lucide-react';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { ProductNameRow } from './rows/ProductName.js';
@@ -71,18 +71,18 @@ function Actions({ products = [], selectedIds = [] }) {
 
   const actions = [
     {
-      name: 'Disable',
+      name: 'Desactivar',
       onAction: () => {
         openAlert({
-          heading: `Disable ${selectedIds.length} products`,
-          content: 'Are you sure?',
+          heading: `Desactivar ${selectedIds.length} productos`,
+          content: '¿Estas seguro?',
           primaryAction: {
-            title: 'Cancel',
+            title: 'Cancelar',
             onAction: closeAlert,
             variant: 'secondary'
           },
           secondaryAction: {
-            title: 'Disable',
+            title: 'Desactivar',
             onAction: async () => {
               await updateProducts(0);
             },
@@ -93,18 +93,18 @@ function Actions({ products = [], selectedIds = [] }) {
       }
     },
     {
-      name: 'Enable',
+      name: 'Activar',
       onAction: () => {
         openAlert({
-          heading: `Enable ${selectedIds.length} products`,
-          content: 'Are you sure?',
+          heading: `Activar ${selectedIds.length} productos`,
+          content: '¿Estas seguro?',
           primaryAction: {
-            title: 'Cancel',
+            title: 'Cancelar',
             onAction: closeAlert,
             variant: 'secondary'
           },
           secondaryAction: {
-            title: 'Enable',
+            title: 'Activar',
             onAction: async () => {
               await updateProducts(1);
             },
@@ -115,18 +115,18 @@ function Actions({ products = [], selectedIds = [] }) {
       }
     },
     {
-      name: 'Delete',
+      name: 'Eliminar',
       onAction: () => {
         openAlert({
-          heading: `Delete ${selectedIds.length} products`,
-          content: <div>Can&apos;t be undone</div>,
+          heading: `Eliminar ${selectedIds.length} productos`,
+          content: <div>No se puede deshacer</div>,
           primaryAction: {
-            title: 'Cancel',
+            title: 'Cancelar',
             onAction: closeAlert,
             variant: 'secondary'
           },
           secondaryAction: {
-            title: 'Delete',
+            title: 'Eliminar',
             onAction: async () => {
               await deleteProducts();
             },
@@ -203,7 +203,7 @@ export default function ProductGrid({
                     default: () => (
                       <InputField
                         name="keyword"
-                        placeholder="Search"
+                        placeholder="Buscar"
                         defaultValue={
                           currentFilters.find((f) => f.key === 'keyword')?.value
                         }
@@ -239,13 +239,13 @@ export default function ProductGrid({
                         }}
                       >
                         <SelectTrigger>
-                          <SelectValue>Status</SelectValue>
+                          <SelectValue>Estado</SelectValue>
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectLabel>Status</SelectLabel>
-                            <SelectItem value="1">Enabled</SelectItem>
-                            <SelectItem value="0">Disabled</SelectItem>
+                            <SelectLabel>Estado</SelectLabel>
+                            <SelectItem value="1">Activo</SelectItem>
+                            <SelectItem value="0">Inactivo</SelectItem>
                           </SelectGroup>
                         </SelectContent>
                       </Select>
@@ -267,11 +267,11 @@ export default function ProductGrid({
                         }}
                       >
                         <SelectTrigger>
-                          <SelectValue>Product type</SelectValue>
+                          <SelectValue>Tipo de producto</SelectValue>
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectLabel>Product type</SelectLabel>
+                            <SelectLabel>Tipo de producto</SelectLabel>
                             <SelectItem value="simple">Simple</SelectItem>
                             <SelectItem value="configurable">
                               Configurable
@@ -298,7 +298,7 @@ export default function ProductGrid({
               window.location.href = url.href;
             }}
           >
-            Clear Filters
+            Limpiar filtros
           </Button>
         </CardAction>
       </CardHeader>
@@ -327,7 +327,7 @@ export default function ProductGrid({
                         <TableHead>
                           <div className="table-header id-header">
                             <div className="font-medium uppercase text-xs">
-                              <span>Thumbnail</span>
+                              <span>Imagen</span>
                             </div>
                           </div>
                         </TableHead>
@@ -339,7 +339,7 @@ export default function ProductGrid({
                     component: {
                       default: () => (
                         <SortableHeader
-                          title="Name"
+                          title="Nombre"
                           name="name"
                           currentFilters={currentFilters}
                         />
@@ -351,7 +351,7 @@ export default function ProductGrid({
                     component: {
                       default: () => (
                         <SortableHeader
-                          title="Price"
+                          title="Precio"
                           name="price"
                           currentFilters={currentFilters}
                         />
@@ -369,7 +369,7 @@ export default function ProductGrid({
                     component: {
                       default: () => (
                         <SortableHeader
-                          title="Stock"
+                          title="Inventario"
                           name="qty"
                           currentFilters={currentFilters}
                         />
@@ -381,13 +381,19 @@ export default function ProductGrid({
                     component: {
                       default: () => (
                         <SortableHeader
-                          title="Status"
+                          title="Estado"
                           name="status"
                           currentFilters={currentFilters}
                         />
                       )
                     },
                     sortOrder: 30
+                  },
+                  {
+                    component: {
+                      default: () => <DummyColumnHeader title="Ver" />
+                    },
+                    sortOrder: 35
                   }
                 ]}
               />
@@ -471,6 +477,28 @@ export default function ProductGrid({
                         )
                       },
                       sortOrder: 30
+                    },
+                    {
+                      component: {
+                        default: () => (
+                          <TableCell>
+                            {p.url ? (
+                              <a
+                                href={p.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="Ver producto publico"
+                                className="inline-flex items-center justify-center text-primary hover:text-primary/80"
+                              >
+                                <ExternalLink className="size-4" />
+                              </a>
+                            ) : (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </TableCell>
+                        )
+                      },
+                      sortOrder: 35
                     }
                   ]}
                 />
@@ -480,7 +508,7 @@ export default function ProductGrid({
         </Table>
         {products.length === 0 && (
           <div className="flex w-full justify-center mt-2">
-            There is no product to display
+            No hay productos para mostrar
           </div>
         )}
         <GridPagination total={total} limit={limit} page={page} />
@@ -553,6 +581,7 @@ export const query = `
             text
           }
         }
+        url
         editUrl
         updateApi
         deleteApi

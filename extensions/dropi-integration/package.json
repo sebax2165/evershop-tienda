@@ -1,0 +1,7 @@
+{
+  "name": "dropi-integration",
+  "version": "1.0.0",
+  "description": "Integracion con la plataforma de dropshipping Dropi para sincronizar pedidos",
+  "private": true,
+  "type": "module"
+}

@@ -55,22 +55,22 @@ function Actions({ orders = [], selectedIds = [] }) {
 
   const actions = [
     {
-      name: 'Mark as shipped',
+      name: 'Marcar como enviado',
       onAction: () => {
         openAlert({
-          heading: `Fullfill ${selectedIds.length} orders`,
+          heading: `Completar ${selectedIds.length} pedidos`,
           content: (
             <div className="form-field mb-0">
-              Are you sure you want to mark the selected orders as shipped?
+              ¿Estas seguro de marcar los pedidos seleccionados como enviados?
             </div>
           ),
           primaryAction: {
-            title: 'Cancel',
+            title: 'Cancelar',
             onAction: closeAlert,
             variant: 'secondary'
           },
           secondaryAction: {
-            title: 'Mark as shipped',
+            title: 'Marcar como enviado',
             onAction: async () => {
               await fullFillOrders();
             },
@@ -149,7 +149,7 @@ export default function OrderGrid({
                     default: () => (
                       <InputField
                         name="keyword"
-                        placeholder="Search"
+                        placeholder="Buscar"
                         defaultValue={
                           currentFilters.find((f) => f.key === 'keyword')?.value
                         }
@@ -192,11 +192,11 @@ export default function OrderGrid({
                           }}
                         >
                           <SelectTrigger>
-                            <SelectValue>Payment Status</SelectValue>
+                            <SelectValue>Estado de Pago</SelectValue>
                           </SelectTrigger>
                           <SelectContent>
                             <SelectGroup>
-                              <SelectLabel>Payment Status</SelectLabel>
+                              <SelectLabel>Estado de Pago</SelectLabel>
                               {paymentStatusList.map((status, index) => (
                                 <SelectItem key={index} value={status.code}>
                                   {status.name}
@@ -230,11 +230,11 @@ export default function OrderGrid({
                         }}
                       >
                         <SelectTrigger>
-                          <SelectValue>Shipment Status</SelectValue>
+                          <SelectValue>Estado de Envio</SelectValue>
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectLabel>Shipment Status</SelectLabel>
+                            <SelectLabel>Estado de Envio</SelectLabel>
                             {shipmentStatusList.map((status, index) => (
                               <SelectItem key={index} value={status.code}>
                                 {status.name}
@@ -262,7 +262,7 @@ export default function OrderGrid({
               window.location.href = url.href;
             }}
           >
-            Clear Filters
+            Limpiar filtros
           </Button>
         </CardAction>
       </CardHeader>
@@ -292,7 +292,7 @@ export default function OrderGrid({
                     component: {
                       default: () => (
                         <SortableHeader
-                          title="Order Number"
+                          title="Numero de Pedido"
                           name="number"
                           currentFilters={currentFilters}
                         />
@@ -304,7 +304,7 @@ export default function OrderGrid({
                     component: {
                       default: () => (
                         <SortableHeader
-                          title="Date"
+                          title="Fecha"
                           name="created_at"
                           currentFilters={currentFilters}
                         />
@@ -316,7 +316,7 @@ export default function OrderGrid({
                     component: {
                       default: () => (
                         <SortableHeader
-                          title="Customer Email"
+                          title="Correo del Cliente"
                           name="email"
                           currentFilters={currentFilters}
                         />
@@ -328,7 +328,7 @@ export default function OrderGrid({
                     component: {
                       default: () => (
                         <SortableHeader
-                          title="Shipment Status"
+                          title="Estado de Envio"
                           name="shipment_status"
                           currentFilters={currentFilters}
                         />
@@ -340,7 +340,7 @@ export default function OrderGrid({
                     component: {
                       default: () => (
                         <SortableHeader
-                          title="Payment Status"
+                          title="Estado de Pago"
                           name="payment_status"
                           currentFilters={currentFilters}
                         />
@@ -451,7 +451,7 @@ export default function OrderGrid({
         </Table>
         {orders.length === 0 && (
           <div className="flex w-full justify-center">
-            There is no order to display
+            No hay pedidos para mostrar
           </div>
         )}
         <GridPagination total={total} limit={limit} page={page} />

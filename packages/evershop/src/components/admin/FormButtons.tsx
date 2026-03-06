@@ -18,7 +18,7 @@ const FormButtons: React.FC<{
           window.location.href = cancelUrl;
         }}
       >
-        Cancel
+        Cancelar
       </Button>
       <Button
         onClick={() => {
@@ -28,7 +28,7 @@ const FormButtons: React.FC<{
         }}
         isLoading={isSubmitting}
       >
-        Save
+        Guardar
       </Button>
     </div>
   );

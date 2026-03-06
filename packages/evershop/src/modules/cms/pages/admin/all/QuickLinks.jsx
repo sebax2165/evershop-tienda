@@ -7,12 +7,12 @@ export default function QuickLinks({ dashboard }) {
   return (
     <NavigationItemGroup
       id="quickLinks"
-      name="Quick links"
+      name="Enlaces rapidos"
       items={[
         {
           Icon: HomeIcon,
           url: dashboard,
-          title: 'Dashboard'
+          title: 'Panel principal'
         }
       ]}
     />

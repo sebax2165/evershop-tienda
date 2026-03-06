@@ -21,7 +21,7 @@ const FormButton: React.FC<{
           window.location.href = cancelUrl;
         }}
       >
-        Cancel
+        Cancelar
       </Button>
       <Button
         onClick={() => {
@@ -31,7 +31,7 @@ const FormButton: React.FC<{
         }}
         isLoading={isSubmitting}
       >
-        Save
+        Guardar
       </Button>
     </div>
   );
@@ -64,7 +64,7 @@ export default function ProductEditForm({
       if (result.error) {
         toast.error(result.error.message);
       } else {
-        toast.success('Product updated successfully');
+        toast.success('Producto actualizado exitosamente');
         form.setValue('product_id', result.data.uuid);
       }
     } catch (error) {

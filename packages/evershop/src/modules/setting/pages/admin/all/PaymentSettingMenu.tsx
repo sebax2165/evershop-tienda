@@ -40,12 +40,12 @@ export default function PaymentSettingMenu({
                 isActive && 'text-primary'
               )}
             >
-              Payment Setting
+              Metodos de pago
             </a>
           </div>
         </ItemTitle>
         <ItemDescription>
-          <div>Configure the available payment methods</div>
+          <div>Configura los metodos de pago disponibles</div>
         </ItemDescription>
       </ItemContent>
       <ItemActions>

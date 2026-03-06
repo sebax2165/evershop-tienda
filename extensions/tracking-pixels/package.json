@@ -1,0 +1,8 @@
+{
+  "name": "tracking-pixels",
+  "version": "1.0.0",
+  "description": "Facebook Meta Pixel y TikTok Pixel con soporte de Conversions API",
+  "private": true,
+  "type": "module",
+  "main": "dist/bootstrap.js"
+}

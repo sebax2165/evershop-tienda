@@ -1,7 +1,128 @@
 Discount ${discount} For All Orders Over ${price}, Descuento de ${discount} para todos los pedidos superiores a ${price}.
-Please select, Por favor, selecciona...
-The page you requested does not exist., La página que solicitaste no existe
+Please select, Por favor selecciona...
+The page you requested does not exist., La pagina que solicitaste no existe
 Continue shopping, Continuar comprando
-404 Page Not Found, 404 Página no encontrada
+404 Page Not Found, 404 Pagina no encontrada
 Home, Inicio
 Not found, No encontrado
+Save, Guardar
+Cancel, Cancelar
+Delete, Eliminar
+Enable, Activar
+Disable, Desactivar
+Enabled, Activo
+Disabled, Inactivo
+Status, Estado
+Name, Nombre
+Search, Buscar
+Actions, Acciones
+Edit, Editar
+Create, Crear
+Update, Actualizar
+Yes, Si
+No, No
+Are you sure?, ¿Estas seguro?
+Loading, Cargando
+Submit, Enviar
+Close, Cerrar
+Back, Volver
+Next, Siguiente
+Previous, Anterior
+Filter, Filtrar
+Clear, Limpiar
+Apply, Aplicar
+Select, Seleccionar
+All, Todos
+None, Ninguno
+Required, Obligatorio
+Optional, Opcional
+Description, Descripcion
+Image, Imagen
+Upload, Subir
+Remove, Eliminar
+Add, Agregar
+Settings, Configuracion
+General, General
+Store, Tienda
+Payment, Pago
+Shipping, Envio
+Tax, Impuesto
+Email, Correo electronico
+Password, Contraseña
+Confirm Password, Confirmar contraseña
+Sign In, Iniciar sesion
+Sign Out, Cerrar sesion
+Register, Registrarse
+Forgot Password, Olvide mi contraseña
+Reset Password, Restablecer contraseña
+My Account, Mi cuenta
+Profile, Perfil
+Orders, Pedidos
+Addresses, Direcciones
+Wishlist, Lista de deseos
+Cart, Carrito
+Checkout, Finalizar compra
+Order, Pedido
+Product, Producto
+Products, Productos
+Category, Categoria
+Categories, Categorias
+Collection, Coleccion
+Collections, Colecciones
+Attribute, Atributo
+Attributes, Atributos
+Customer, Cliente
+Customers, Clientes
+Coupon, Cupon
+Coupons, Cupones
+Page, Pagina
+Pages, Paginas
+Widget, Widget
+Widgets, Widgets
+Dashboard, Panel de control
+Catalog, Catalogo
+CMS, CMS
+Promotions, Promociones
+Sale, Ventas
+Price, Precio
+SKU, SKU
+Quantity, Cantidad
+Stock, Inventario
+Weight, Peso
+Type, Tipo
+Simple, Simple
+Configurable, Configurable
+Thumbnail, Imagen
+Published, Publicado
+Draft, Borrador
+Active, Activo
+Inactive, Inactivo
+Created At, Fecha de creacion
+Updated At, Fecha de actualizacion
+View, Ver
+Preview, Vista previa
+Showing, Mostrando
+of, de
+results, resultados
+per page, por pagina
+No results found, No se encontraron resultados
+There is no product to display, No hay productos para mostrar
+items, articulos
+Subtotal, Subtotal
+Total, Total
+Discount, Descuento
+Free, Gratis
+New, Nuevo
+Update, Actualizar
+Refresh, Actualizar
+Export, Exportar
+Import, Importar
+Download, Descargar
+Print, Imprimir
+Copy, Copiar
+Share, Compartir
+Success, Exito
+Error, Error
+Warning, Advertencia
+Info, Informacion
+Confirm, Confirmar

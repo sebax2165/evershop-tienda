@@ -12,6 +12,8 @@ dist
 !extensions/sendgrid
 !extensions/product_review
 !extensions/one-step-checkout
+!extensions/tracking-pixels
+!extensions/dropi-integration
 /themes
 .idea/*
 .evershop

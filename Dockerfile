@@ -5,6 +5,8 @@ RUN npm install
 RUN npm run compile:db
 RUN npm run compile
 RUN cd extensions/one-step-checkout && npx swc ./src/ -d dist/ --config-file .swcrc --copy-files --strip-leading-paths
+RUN cd extensions/tracking-pixels && npx swc ./src/ -d dist/ --config-file .swcrc --copy-files --strip-leading-paths
+RUN cd extensions/dropi-integration && npx swc ./src/ -d dist/ --config-file .swcrc --copy-files --strip-leading-paths
 RUN npm run build
 
 EXPOSE 3000

@@ -25,13 +25,13 @@ export default function BestCustomers({ listUrl, setting }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Best customers</CardTitle>
+        <CardTitle>Mejores clientes</CardTitle>
         <CardDescription>
-          A list of customers who have placed the most orders
+          Lista de clientes con mas pedidos realizados
         </CardDescription>
         <CardAction>
           <a href={listUrl} className="text-sm text-primary hover:underline">
-            View all customers
+            Ver todos los clientes
           </a>
         </CardAction>
       </CardHeader>
@@ -39,8 +39,8 @@ export default function BestCustomers({ listUrl, setting }) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Full name</TableHead>
-              <TableHead>Orders</TableHead>
+              <TableHead>Nombre completo</TableHead>
+              <TableHead>Pedidos</TableHead>
               <TableHead>Total</TableHead>
             </TableRow>
           </TableHeader>

@@ -1,0 +1,4 @@
+[
+  { "method": "GET", "path": "/api/dropi/admin/setting", "access": "private" },
+  { "method": "POST", "path": "/api/dropi/admin/setting", "access": "private" }
+]

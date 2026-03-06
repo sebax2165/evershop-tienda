@@ -9,7 +9,7 @@ interface NewCouponQuickLinkProps {
 export default function NewProductQuickLink({
   couponNew
 }: NewCouponQuickLinkProps) {
-  return <NavigationItem Icon={GiftIcon} title="New Coupon" url={couponNew} />;
+  return <NavigationItem Icon={GiftIcon} title="Nuevo cupon" url={couponNew} />;
 }
 
 export const layout = {

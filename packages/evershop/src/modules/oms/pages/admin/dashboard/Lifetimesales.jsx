@@ -35,10 +35,10 @@ export default function LifetimeSale({ api }) {
   const { orders, total, completed_percentage, cancelled_percentage } = data;
 
   const chartData = [
-    { name: 'Completed', value: completed_percentage },
-    { name: 'Cancelled', value: cancelled_percentage },
+    { name: 'Completados', value: completed_percentage },
+    { name: 'Cancelados', value: cancelled_percentage },
     {
-      name: 'Others',
+      name: 'Otros',
       value: 100 - completed_percentage - cancelled_percentage
     }
   ];
@@ -64,9 +64,9 @@ export default function LifetimeSale({ api }) {
 
   if (fetching) {
     return (
-      <Card title="Lifetime Sales">
+      <Card title="Ventas totales">
         <CardHeader>
-          <CardTitle>Lifetime Sales</CardTitle>
+          <CardTitle>Ventas totales</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="skeleton-wrapper-lifetime">
@@ -85,33 +85,33 @@ export default function LifetimeSale({ api }) {
     );
   } else {
     return (
-      <Card title="Lifetime Sales">
+      <Card title="Ventas totales">
         <CardHeader>
-          <CardTitle>Lifetime Sales</CardTitle>
+          <CardTitle>Ventas totales</CardTitle>
           <CardDescription>
-            Overview of total sales and order status over the lifetime of your
+            Resumen de ventas totales y estado de pedidos
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-2">
             <div className="flex space-x-2 items-center">
               <Dot variant="info" />
-              <div className="self-center">{orders} orders</div>
+              <div className="self-center">{orders} pedidos</div>
             </div>
             <div className="flex space-x-2 items-center">
               <Dot variant="info" />
-              <div className="self-center">{total} lifetime sale</div>
+              <div className="self-center">{total} ventas totales</div>
             </div>
             <div className="flex space-x-2 items-center">
               <Dot variant="success" />
               <div className="self-center">
-                {completed_percentage}% of orders completed
+                {completed_percentage}% pedidos completados
               </div>
             </div>
             <div className="flex space-x-2 items-center">
               <Dot variant="critical" />
               <div className="self-center">
-                {cancelled_percentage}% of orders cancelled
+                {cancelled_percentage}% pedidos cancelados
               </div>
             </div>
           </div>

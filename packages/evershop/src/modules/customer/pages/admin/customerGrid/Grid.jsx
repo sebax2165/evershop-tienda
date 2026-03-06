@@ -54,18 +54,18 @@ function Actions({ customers = [], selectedIds = [] }) {
 
   const actions = [
     {
-      name: 'Disable',
+      name: 'Desactivar',
       onAction: () => {
         openAlert({
-          heading: `Disable ${selectedIds.length} customers`,
-          content: 'Are you sure?',
+          heading: `Desactivar ${selectedIds.length} clientes`,
+          content: '¿Estas seguro?',
           primaryAction: {
-            title: 'Cancel',
+            title: 'Cancelar',
             onAction: closeAlert,
             variant: 'secondary'
           },
           secondaryAction: {
-            title: 'Disable',
+            title: 'Desactivar',
             onAction: async () => {
               await updateCustomers(0);
             },
@@ -75,18 +75,18 @@ function Actions({ customers = [], selectedIds = [] }) {
       }
     },
     {
-      name: 'Enable',
+      name: 'Activar',
       onAction: () => {
         openAlert({
-          heading: `Enable ${selectedIds.length} customers`,
-          content: 'Are you sure?',
+          heading: `Activar ${selectedIds.length} clientes`,
+          content: '¿Estas seguro?',
           primaryAction: {
-            title: 'Cancel',
+            title: 'Cancelar',
             onAction: closeAlert,
             variant: 'secondary'
           },
           secondaryAction: {
-            title: 'Enable',
+            title: 'Activar',
             onAction: async () => {
               await updateCustomers(1);
             },
@@ -160,7 +160,7 @@ export default function CustomerGrid({
                     default: () => (
                       <InputField
                         name="keyword"
-                        placeholder="Search"
+                        placeholder="Buscar"
                         defaultValue={
                           currentFilters.find((f) => f.key === 'keyword')?.value
                         }
@@ -196,13 +196,13 @@ export default function CustomerGrid({
                         }}
                       >
                         <SelectTrigger>
-                          <SelectValue>Status</SelectValue>
+                          <SelectValue>Estado</SelectValue>
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectLabel>Status</SelectLabel>
-                            <SelectItem value="1">Enabled</SelectItem>
-                            <SelectItem value="0">Disabled</SelectItem>
+                            <SelectLabel>Estado</SelectLabel>
+                            <SelectItem value="1">Activo</SelectItem>
+                            <SelectItem value="0">Inactivo</SelectItem>
                           </SelectGroup>
                         </SelectContent>
                       </Select>
@@ -225,7 +225,7 @@ export default function CustomerGrid({
               window.location.href = url.href;
             }}
           >
-            Clear filter
+            Limpiar filtros
           </Button>
         </CardAction>
       </CardHeader>
@@ -252,7 +252,7 @@ export default function CustomerGrid({
                     component: {
                       default: () => (
                         <SortableHeader
-                          title="Full Name"
+                          title="Nombre Completo"
                           name="full_name"
                           currentFilters={currentFilters}
                         />
@@ -264,7 +264,7 @@ export default function CustomerGrid({
                     component: {
                       default: () => (
                         <SortableHeader
-                          title="Email"
+                          title="Correo electronico"
                           name="email"
                           currentFilters={currentFilters}
                         />
@@ -276,7 +276,7 @@ export default function CustomerGrid({
                     component: {
                       default: () => (
                         <SortableHeader
-                          title="Status"
+                          title="Estado"
                           name="status"
                           currentFilters={currentFilters}
                         />
@@ -288,7 +288,7 @@ export default function CustomerGrid({
                     component: {
                       default: () => (
                         <SortableHeader
-                          title="Created At"
+                          title="Fecha de creacion"
                           name="created_at"
                           currentFilters={currentFilters}
                         />
@@ -369,7 +369,7 @@ export default function CustomerGrid({
         </Table>
         {customers.length === 0 && (
           <div className="flex w-full justify-center mt-3">
-            There is no customer to display
+            No hay clientes para mostrar
           </div>
         )}
         <GridPagination total={total} limit={limit} page={page} />

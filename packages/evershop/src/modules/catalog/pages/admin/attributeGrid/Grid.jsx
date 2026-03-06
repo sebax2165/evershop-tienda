@@ -63,18 +63,18 @@ function Actions({ attributes = [], selectedIds = [] }) {
 
   const actions = [
     {
-      name: 'Delete',
+      name: 'Eliminar',
       onAction: () => {
         openAlert({
-          heading: `Delete ${selectedIds.length} attributes`,
-          content: <div>Can&apos;t be undone</div>,
+          heading: `Eliminar ${selectedIds.length} atributos`,
+          content: <div>No se puede deshacer</div>,
           primaryAction: {
-            title: 'Cancel',
+            title: 'Cancelar',
             onAction: closeAlert,
             variant: 'secondary'
           },
           secondaryAction: {
-            title: 'Delete',
+            title: 'Eliminar',
             onAction: async () => {
               await deleteAttributes();
             },
@@ -140,7 +140,7 @@ export default function AttributeGrid({
         <Form submitBtn={false} id="attributeGridFilter">
           <InputField
             name="name"
-            placeholder="Search"
+            placeholder="Buscar"
             defaultValue={currentFilters.find((f) => f.key === 'name')?.value}
             onKeyPress={(e) => {
               // If the user press enter, we should submit the form
@@ -169,7 +169,7 @@ export default function AttributeGrid({
               window.location.href = url.href;
             }}
           >
-            Clear Filters
+            Limpiar filtros
           </Button>
         </CardAction>
       </CardHeader>
@@ -198,7 +198,7 @@ export default function AttributeGrid({
                       default: () => (
                         <SortableHeader
                           name="name"
-                          title="Attribute Name"
+                          title="Nombre de Atributo"
                           currentFilters={currentFilters}
                         />
                       )
@@ -207,7 +207,7 @@ export default function AttributeGrid({
                   },
                   {
                     component: {
-                      default: () => <DummyColumnHeader title="Groups" />
+                      default: () => <DummyColumnHeader title="Grupos" />
                     },
                     sortOrder: 15
                   },
@@ -216,7 +216,7 @@ export default function AttributeGrid({
                       default: () => (
                         <SortableHeader
                           name="type"
-                          title="Type"
+                          title="Tipo"
                           currentFilters={currentFilters}
                         />
                       )
@@ -228,7 +228,7 @@ export default function AttributeGrid({
                       default: () => (
                         <SortableHeader
                           name="is_required"
-                          title="Is Required?"
+                          title="Es Requerido?"
                           currentFilters={currentFilters}
                         />
                       )
@@ -240,7 +240,7 @@ export default function AttributeGrid({
                       default: () => (
                         <SortableHeader
                           name="is_filterable"
-                          title="Is Filterable?"
+                          title="Es Filtrable?"
                           currentFilters={currentFilters}
                         />
                       )
@@ -314,7 +314,7 @@ export default function AttributeGrid({
                     {
                       component: {
                         default: () => (
-                          <TableCell>{a.isRequired ? 'Yes' : 'No'}</TableCell>
+                          <TableCell>{a.isRequired ? 'Si' : 'No'}</TableCell>
                         )
                       },
                       sortOrder: 25
@@ -322,7 +322,7 @@ export default function AttributeGrid({
                     {
                       component: {
                         default: () => (
-                          <TableCell>{a.isFilterable ? 'Yes' : 'No'}</TableCell>
+                          <TableCell>{a.isFilterable ? 'Si' : 'No'}</TableCell>
                         )
                       },
                       sortOrder: 30
@@ -335,7 +335,7 @@ export default function AttributeGrid({
         </Table>
         {attributes.length === 0 && (
           <div className="flex w-full justify-center mt-2">
-            There is no attribute to display
+            No hay atributos para mostrar
           </div>
         )}
         <GridPagination total={total} limit={limit} page={page} />

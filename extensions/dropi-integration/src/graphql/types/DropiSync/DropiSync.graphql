@@ -1,0 +1,24 @@
+type DropiSync {
+  syncId: Int
+  dropiOrderId: String
+  dropiGuideNumber: String
+  status: String
+  dropiStatus: String
+  errorMessage: String
+  syncedAt: String
+  createdAt: String
+}
+
+type DropiProductMapping {
+  mapId: Int
+  evershopProductId: Int
+  dropiProductId: Int
+  dropiVariationId: Int
+  dropiProductName: String
+  productName: String
+}
+
+extend type Query {
+  dropiOrderSync(orderUuid: String!): DropiSync
+  dropiProductMappings: [DropiProductMapping]
+}

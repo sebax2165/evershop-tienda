@@ -1,7 +1,7 @@
 {
   "shop": {
     "currency": "USD",
-    "language": "en",
+    "language": "es",
     "weightUnit": "kg",
     "timezone": "UTC",
     "homeUrl": "https://evershop-tienda-production.up.railway.app"
@@ -13,6 +13,18 @@
         "resolve": "extensions/one-step-checkout",
         "enabled": true,
         "priority": 10
+      },
+      {
+        "name": "tracking-pixels",
+        "resolve": "extensions/tracking-pixels",
+        "enabled": true,
+        "priority": 15
+      },
+      {
+        "name": "dropi-integration",
+        "resolve": "extensions/dropi-integration",
+        "enabled": true,
+        "priority": 20
       }
     ]
   }
