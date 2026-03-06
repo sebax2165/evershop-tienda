@@ -97,7 +97,7 @@ const ProductCategory: React.FC<{
   return (
     <div>
       {data.category.path.map((item, index) => (
-        <span key={item.name} className="text-gray-500">
+        <span key={item.name} className="text-muted-foreground">
           {item.name}
           {index < data.category.path.length - 1 && ' > '}
         </span>

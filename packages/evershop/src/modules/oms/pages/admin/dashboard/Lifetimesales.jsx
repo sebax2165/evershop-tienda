@@ -14,7 +14,7 @@ import './Lifetimesales.scss';
 const COLORS = ['#aee9d1', '#fed3d1', '#a4e8f2'];
 
 const Dot = ({ variant }) => {
-  let bgColor = 'bg-gray-400';
+  let bgColor = 'bg-muted-foreground';
   if (variant === 'info') {
     bgColor = 'bg-blue-400';
   } else if (variant === 'success') {

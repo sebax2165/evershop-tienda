@@ -85,7 +85,7 @@ function CategoryItem({
     (item) => item.categoryId === category.categoryId
   )
     ? 'flex justify-start gap-2 items-center p-2 rounded-md bg-green-100 transition-colors duration-500'
-    : 'flex justify-start gap-2 items-center p-2 rounded-md hover:bg-gray-100 transition-colors duration-500';
+    : 'flex justify-start gap-2 items-center p-2 rounded-md hover:bg-muted transition-colors duration-500';
   return (
     <li className="[&_ul]:pl-2">
       <div className={className}>
@@ -171,7 +171,7 @@ function CategoryTree({ selectedCategories, onSelect }: CategoryTreeProps) {
     return <p className="text-destructive">{error.message}</p>;
   }
   if (!data || !data.categories || data.categories.items.length === 0) {
-    return <div className="text-gray-400 text-md">There is no category</div>;
+    return <div className="text-muted-foreground text-md">There is no category</div>;
   }
 
   return (

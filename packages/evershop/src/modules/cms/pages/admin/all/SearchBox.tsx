@@ -106,7 +106,7 @@ export default function SearchBox({ resourceLinks }: SearchBoxProps) {
 
   return (
     <div className="relative self-center ml-[14.563rem] w-[34.375rem]">
-      <InputGroup className="bg-[#f1f2f3] rounded-[3px] border-[#f1f2f3]">
+      <InputGroup className="bg-muted rounded-[3px] border-border">
         <InputGroupAddon>
           <Search />
         </InputGroupAddon>
@@ -119,7 +119,7 @@ export default function SearchBox({ resourceLinks }: SearchBoxProps) {
       </InputGroup>
       {showResult && (
         <div
-          className="absolute top-[calc(100%+1rem)] left-0 bg-white rounded-[5px] w-full py-5 px-2.5 border border-border shadow-lg z-50 max-h-[30rem] overflow-y-auto"
+          className="absolute top-[calc(100%+1rem)] left-0 bg-card rounded-[5px] w-full py-5 px-2.5 border border-border shadow-lg z-50 max-h-[30rem] overflow-y-auto"
           ref={clickRef}
         >
           {(loading || fetching) && (

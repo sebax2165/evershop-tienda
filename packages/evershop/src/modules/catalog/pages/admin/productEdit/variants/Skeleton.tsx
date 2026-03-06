@@ -14,28 +14,28 @@ interface SkeletonProps {
 const SkeletonRow: React.FC = () => (
   <TableRow>
     <TableCell>
-      <div className="w-7 h-7 bg-gray-200 rounded animate-pulse" />
+      <div className="w-7 h-7 bg-muted rounded animate-pulse" />
     </TableCell>
     <TableCell>
-      <div className="w-5 h-4 bg-gray-200 rounded animate-pulse" />
+      <div className="w-5 h-4 bg-muted rounded animate-pulse" />
     </TableCell>
     <TableCell>
-      <div className="w-7 h-4 bg-gray-200 rounded animate-pulse" />
+      <div className="w-7 h-4 bg-muted rounded animate-pulse" />
     </TableCell>
     <TableCell>
-      <div className="w-16 h-4 bg-gray-200 rounded animate-pulse" />
+      <div className="w-16 h-4 bg-muted rounded animate-pulse" />
     </TableCell>
     <TableCell>
-      <div className="w-10 h-4 bg-gray-200 rounded animate-pulse" />
+      <div className="w-10 h-4 bg-muted rounded animate-pulse" />
     </TableCell>
     <TableCell>
-      <div className="w-4 h-4 bg-gray-200 rounded animate-pulse" />
+      <div className="w-4 h-4 bg-muted rounded animate-pulse" />
     </TableCell>
     <TableCell>
-      <div className="w-10 h-4 bg-gray-200 rounded animate-pulse" />
+      <div className="w-10 h-4 bg-muted rounded animate-pulse" />
     </TableCell>
     <TableCell>
-      <div className="w-7 h-5 bg-gray-200 rounded animate-pulse" />
+      <div className="w-7 h-5 bg-muted rounded animate-pulse" />
     </TableCell>
   </TableRow>
 );

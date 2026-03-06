@@ -13,11 +13,11 @@ export const ImageUploaderSkeleton: React.FC<ImageUploaderSkeletonProps> = ({
     return (
       <div className="flex justify-center">
         <div
-          className="relative border border-dashed border-gray-300 rounded flex items-center justify-center bg-gray-50 animate-pulse"
+          className="relative border border-dashed border-border rounded flex items-center justify-center bg-muted animate-pulse"
           style={{ aspectRatio: '1/1', width: '300px', height: '300px' }}
         >
           <div className="absolute top-2 right-2">
-            <div className="w-4 h-4 rounded-full bg-gray-200"></div>
+            <div className="w-4 h-4 rounded-full bg-muted"></div>
           </div>
           <svg
             style={{ width: '30px', height: '30px' }}
@@ -40,7 +40,7 @@ export const ImageUploaderSkeleton: React.FC<ImageUploaderSkeletonProps> = ({
   return (
     <div className="grid grid-cols-4 gap-2">
       <div
-        className="col-span-2 row-span-2 relative border border-dashed border-gray-300 rounded flex items-center justify-center bg-gray-50 animate-pulse"
+        className="col-span-2 row-span-2 relative border border-dashed border-border rounded flex items-center justify-center bg-muted animate-pulse"
         style={{ aspectRatio: '1/1', minHeight: '200px' }}
       >
         <svg
@@ -61,7 +61,7 @@ export const ImageUploaderSkeleton: React.FC<ImageUploaderSkeletonProps> = ({
       {items.slice(1, itemCount).map((_, index) => (
         <div
           key={index}
-          className="relative border border-dashed border-gray-300 rounded flex items-center justify-center bg-gray-50 animate-pulse"
+          className="relative border border-dashed border-border rounded flex items-center justify-center bg-muted animate-pulse"
           style={{ aspectRatio: '1/1', minHeight: '100px' }}
         >
           <svg
@@ -80,7 +80,7 @@ export const ImageUploaderSkeleton: React.FC<ImageUploaderSkeletonProps> = ({
         </div>
       ))}
       <div
-        className="border border-dashed border-gray-300 rounded flex items-center justify-center bg-gray-50"
+        className="border border-dashed border-border rounded flex items-center justify-center bg-muted"
         style={{ aspectRatio: '1/1', minHeight: '100px' }}
       >
         <svg

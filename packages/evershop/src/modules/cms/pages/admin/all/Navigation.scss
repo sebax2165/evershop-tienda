@@ -25,7 +25,7 @@
   max-width: 100%;
 }
 .admin-navigation .menu-toggle {
-  color: #fff;
+  color: var(--foreground);
 }
 .admin-nav li span,
 .admin-navigation li a {
@@ -46,7 +46,7 @@
   margin-left: 0.625rem;
 }
 .nav-item > a:hover {
-  background-color: #edeeef;
+  background-color: var(--muted);
   border-radius: 4px;
 }
 .nav-item.active::before {
@@ -64,7 +64,7 @@
   position: relative;
   a {
     color: var(--primary);
-    background-color: #edeeef;
+    background-color: var(--muted);
     border-radius: 4px;
   }
 }
@@ -74,11 +74,11 @@
 .admin-navigation::-webkit-scrollbar {
   width: 5px;
   height: 8px;
-  background-color: #edeeef;
+  background-color: var(--muted);
 }
 
 .admin-navigation::-webkit-scrollbar-thumb {
-  background-color: #058c8c;
-  outline: 1px solid #058c8c;
+  background-color: var(--primary);
+  outline: 1px solid var(--primary);
   border-radius: 2px;
 }

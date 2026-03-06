@@ -164,7 +164,7 @@ const CategorySelector: React.FC<{
                 <div className="col-span-5">
                   <h3>
                     {cat.path.map((item, index) => (
-                      <span key={item.name} className="text-gray-500">
+                      <span key={item.name} className="text-muted-foreground">
                         {item.name}
                         {index < cat.path.length - 1 && ' > '}
                       </span>

@@ -9,16 +9,16 @@ body.admin {
     @apply mb-4;
 
     label {
-      @apply flex items-center mb-2 font-medium text-gray-700;
+      @apply flex items-center mb-2 font-medium text-foreground;
 
       .field-unit {
-        @apply ml-2 text-sm text-gray-500;
+        @apply ml-2 text-sm text-muted-foreground;
       }
     }
 
     fieldset {
       legend {
-        @apply flex items-center mb-2 font-medium text-gray-700;
+        @apply flex items-center mb-2 font-medium text-foreground;
       }
     }
 
@@ -37,7 +37,7 @@ body.admin {
     input[type='file'],
     textarea,
     select {
-      @apply block w-full px-3 py-2 text-base text-gray-900 placeholder-gray-300 border border-gray-300 rounded-md focus:outline-none focus:border-gray-300 sm:text-sm transition-colors;
+      @apply block w-full px-3 py-2 text-base text-foreground placeholder-muted-foreground border border-border rounded-md focus:outline-none focus:border-border sm:text-sm transition-colors;
 
       &:focus {
         box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.1),
@@ -45,7 +45,7 @@ body.admin {
       }
 
       &.error {
-        @apply border-red-500;
+        @apply border-destructive;
 
         &:focus {
           box-shadow: 0 0 0 5px rgba(239, 68, 68, 0.1),
@@ -71,7 +71,7 @@ body.admin {
 
     &.error {
       select {
-        @apply border-red-500;
+        @apply border-destructive;
         background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ef4444' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
 
         &:focus {
@@ -83,7 +83,7 @@ body.admin {
 
       input[type='checkbox'],
       input[type='radio'] {
-        @apply border-red-500;
+        @apply border-destructive;
       }
     }
 
@@ -92,7 +92,7 @@ body.admin {
     }
 
     input[type='file'] {
-      @apply file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100;
+      @apply file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-muted file:text-foreground hover:file:bg-accent;
     }
 
     input[type='color'] {
@@ -101,10 +101,10 @@ body.admin {
 
     input[type='checkbox'],
     input[type='radio'] {
-      @apply w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded;
+      @apply w-4 h-4 text-primary bg-muted border-border rounded;
 
       &:focus {
-        @apply outline-none border-blue-500;
+        @apply outline-none border-primary;
       }
     }
 
@@ -129,26 +129,26 @@ body.admin {
         }
 
         label {
-          @apply mb-0 font-normal cursor-pointer text-sm text-gray-700;
+          @apply mb-0 font-normal cursor-pointer text-sm text-foreground;
 
           &.disabled {
-            @apply text-gray-400 cursor-not-allowed;
+            @apply text-muted-foreground cursor-not-allowed;
           }
         }
       }
     }
 
     .field-error {
-      @apply text-red-600 text-sm mt-1;
+      @apply text-destructive text-sm mt-1;
     }
 
     input[readonly],
     textarea[readonly],
     select[readonly] {
-      @apply bg-gray-50 text-gray-600 cursor-not-allowed border-gray-200;
+      @apply bg-muted text-muted-foreground cursor-not-allowed border-border;
 
       &:focus {
-        @apply ring-0 border-gray-200 outline-none;
+        @apply ring-0 border-border outline-none;
       }
     }
 
@@ -156,41 +156,41 @@ body.admin {
       input,
       textarea,
       select {
-        @apply bg-gray-50 text-gray-600 cursor-not-allowed border-gray-200;
+        @apply bg-muted text-muted-foreground cursor-not-allowed border-border;
 
         &:focus {
-          @apply ring-0 border-gray-200 outline-none;
+          @apply ring-0 border-border outline-none;
         }
       }
 
       label {
-        @apply text-gray-500;
+        @apply text-muted-foreground;
       }
 
       .field-helper {
-        @apply text-gray-400;
+        @apply text-muted-foreground;
       }
     }
 
     input[disabled],
     textarea[disabled],
     select[disabled] {
-      @apply bg-gray-100 text-gray-400 cursor-not-allowed opacity-60;
+      @apply bg-muted text-muted-foreground cursor-not-allowed opacity-60;
     }
 
     .field-helper {
-      @apply text-gray-500 text-sm mt-1;
+      @apply text-muted-foreground text-sm mt-1;
     }
 
     .field-tooltip {
       @apply relative inline-block ml-1;
 
       .tooltip-trigger {
-        @apply w-4 h-4 text-gray-400 cursor-help;
+        @apply w-4 h-4 text-muted-foreground cursor-help;
       }
 
       .tooltip-content {
-        @apply absolute z-50 px-3 py-2 text-sm text-white bg-gray-900 rounded-md shadow-lg opacity-0 invisible transition-all duration-200;
+        @apply absolute z-50 px-3 py-2 text-sm text-primary-foreground bg-background rounded-md shadow-lg opacity-0 invisible transition-all duration-200;
         @apply bottom-full left-1/2 transform -translate-x-1/2 mb-2;
         @apply min-w-max max-w-xs;
 
@@ -198,7 +198,7 @@ body.admin {
           content: '';
           @apply absolute top-full left-1/2 transform -translate-x-1/2;
           border: 4px solid transparent;
-          border-top-color: #111827;
+          border-top-color: var(--foreground);
         }
 
         &.show {
@@ -223,7 +223,7 @@ body.admin {
       @apply relative;
 
       .number-unit {
-        @apply absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500 pointer-events-none;
+        @apply absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground pointer-events-none;
       }
 
       input {
@@ -234,7 +234,7 @@ body.admin {
     }
 
     .file-field-info {
-      @apply text-xs text-gray-500 mt-1;
+      @apply text-xs text-muted-foreground mt-1;
     }
 
     .color-input-group {
@@ -250,74 +250,74 @@ body.admin {
     }
 
     .range-value {
-      @apply ml-2 text-sm text-gray-500;
+      @apply ml-2 text-sm text-muted-foreground;
     }
 
     .range-labels {
-      @apply flex justify-between text-xs text-gray-500 mt-1;
+      @apply flex justify-between text-xs text-muted-foreground mt-1;
     }
 
     .file-size-hint {
-      @apply mt-1 text-sm text-gray-500;
+      @apply mt-1 text-sm text-muted-foreground;
     }
 
     .file-list {
       @apply mt-2;
 
       .file-list-label {
-        @apply text-sm text-gray-600;
+        @apply text-sm text-muted-foreground;
       }
 
       .file-items {
-        @apply text-sm text-gray-500 list-disc list-inside;
+        @apply text-sm text-muted-foreground list-disc list-inside;
       }
     }
 
     .react-select {
       &__control {
-        @apply border border-gray-300 rounded-md transition-colors;
+        @apply border border-border rounded-md transition-colors;
 
         &--is-focused {
-          @apply border-blue-500;
+          @apply border-primary;
           box-shadow: 0 0 0 1px rgb(59, 130, 246);
         }
       }
 
       &__menu {
-        @apply bg-white border border-gray-300 rounded-md shadow-lg mt-1;
+        @apply bg-card border border-border rounded-md shadow-lg mt-1;
       }
 
       &__option {
         @apply px-3 py-2 cursor-pointer;
 
         &--is-focused {
-          @apply bg-blue-50;
+          @apply bg-accent;
         }
 
         &--is-selected {
-          @apply bg-blue-600 text-white;
+          @apply bg-primary text-primary-foreground;
         }
       }
 
       &__multi-value {
-        @apply bg-blue-100 rounded;
+        @apply bg-accent rounded;
 
         &__label {
-          @apply text-blue-800;
+          @apply text-primary;
         }
 
         &__remove {
-          @apply text-blue-600 hover:bg-red-500 hover:text-white rounded-r;
+          @apply text-primary hover:bg-destructive hover:text-primary-foreground rounded-r;
         }
       }
     }
 
     &.error .react-select {
       &__control {
-        @apply border-red-500;
+        @apply border-destructive;
 
         &--is-focused {
-          @apply border-red-500;
+          @apply border-destructive;
           box-shadow: 0 0 0 2px rgb(239, 68, 68);
         }
       }

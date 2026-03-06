@@ -45,7 +45,7 @@ const ParentCategory: React.FC<{
         {category && (
           <div className="border rounded border-border mb-2 p-2">
             {category.path.map((item, index) => (
-              <span key={item.name} className="text-gray-500">
+              <span key={item.name} className="text-muted-foreground">
                 {item.name}
                 {index < category.path.length - 1 && ' > '}
               </span>
