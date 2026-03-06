@@ -1,0 +1,5 @@
+{
+  "methods": ["GET"],
+  "path": "/comprar/:url_key",
+  "name": "One-step checkout page"
+}

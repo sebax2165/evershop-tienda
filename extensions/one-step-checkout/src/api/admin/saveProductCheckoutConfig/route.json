@@ -1,0 +1,7 @@
+[
+  {
+    "method": "POST",
+    "path": "/admin/products/:product_id/checkout-config",
+    "access": "private"
+  }
+]

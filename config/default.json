@@ -5,5 +5,15 @@
     "weightUnit": "kg",
     "timezone": "UTC",
     "homeUrl": "https://evershop-tienda-production.up.railway.app"
+  },
+  "system": {
+    "extensions": [
+      {
+        "name": "one-step-checkout",
+        "resolve": "extensions/one-step-checkout",
+        "enabled": true,
+        "priority": 10
+      }
+    ]
   }
 }

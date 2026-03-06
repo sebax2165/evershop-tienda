@@ -1,0 +1,16 @@
+type ProductCheckoutConfig {
+  enabled: Boolean
+  defaultCountry: String
+  codFee: Float
+  thankYouMessage: String
+  showEmail: Boolean
+  showPostcode: Boolean
+  showUrgencyTimer: Boolean
+  urgencyTimerMinutes: Int
+  customButtonText: String
+}
+
+extend type Product {
+  checkoutConfig: ProductCheckoutConfig
+  oneStepCheckoutUrl: String
+}
