@@ -5,5 +5,10 @@
     "weightUnit": "kg",
     "timezone": "UTC",
     "homeUrl": "https://evershop-tienda-production.up.railway.app"
+  },
+  "system": {
+    "session": {
+      "cookieSecret": "ev3rsh0p_c00k1e_s3cr3t_2026_s4f3"
+    }
   }
 }
