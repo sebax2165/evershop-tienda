@@ -2,5 +2,6 @@
   "name": "one-step-checkout",
   "version": "1.0.0",
   "description": "One-step checkout for LATAM dropshipping with COD support",
-  "private": true
+  "private": true,
+  "type": "module"
 }
