@@ -1,0 +1,5 @@
+[
+  { "method": "GET", "path": "/admin/cod/quantity-offers/:product_id", "access": "private" },
+  { "method": "POST", "path": "/admin/cod/quantity-offers/:product_id", "access": "private" },
+  { "method": "DELETE", "path": "/admin/cod/quantity-offers/:offer_id", "access": "private" }
+]

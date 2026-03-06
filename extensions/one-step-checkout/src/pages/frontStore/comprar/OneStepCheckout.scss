@@ -1,12 +1,105 @@
 @reference '../../../../../../packages/evershop/src/modules/base/pages/frontStore/all/tailwind.css';
 
-.osc-wrapper {
-  min-height: 100vh;
-  background-color: var(--background);
-  padding: 1rem;
+// ==========================================================================
+// CSS Variables (consumed from theme, fallbacks for standalone)
+// ==========================================================================
 
-  @media (min-width: 768px) {
-    padding: 2rem;
+:root {
+  --osc-radius: var(--radius, 0.5rem);
+  --osc-transition: 0.2s ease;
+}
+
+// ==========================================================================
+// Animations
+// ==========================================================================
+
+@keyframes osc-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes osc-slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes osc-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes osc-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+@keyframes osc-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+// ==========================================================================
+// Spinner
+// ==========================================================================
+
+.osc-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: osc-spin 0.6s linear infinite;
+
+  &--sm {
+    width: 18px;
+    height: 18px;
+    border-width: 2px;
+    border-color: var(--primary-foreground);
+    border-top-color: transparent;
+  }
+}
+
+// ==========================================================================
+// Loading State
+// ==========================================================================
+
+.osc-loading {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+  background-color: var(--background);
+}
+
+// ==========================================================================
+// Wrapper & Container
+// ==========================================================================
+
+.osc-wrapper {
+  background-color: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+
+  &--embedded {
+    min-height: 100vh;
+    padding: 1rem;
+
+    @media (min-width: 768px) {
+      padding: 2rem;
+    }
+  }
+
+  &--popup {
+    padding: 1.25rem 1rem 2rem;
   }
 }
 
@@ -15,19 +108,129 @@
   margin: 0 auto;
 }
 
-/* Product Section */
+// ==========================================================================
+// Popup Mode
+// ==========================================================================
+
+.osc-popup-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: osc-fade-in 0.2s ease;
+
+  @media (min-width: 768px) {
+    align-items: center;
+    padding: 2rem;
+  }
+}
+
+.osc-popup-panel {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  max-height: 95vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background-color: var(--background);
+  border-radius: var(--osc-radius) var(--osc-radius) 0 0;
+  animation: osc-slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-overflow-scrolling: touch;
+
+  @media (min-width: 768px) {
+    border-radius: var(--osc-radius);
+    max-height: 90vh;
+  }
+
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 2px;
+  }
+}
+
+.osc-popup-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 10;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: var(--muted);
+  color: var(--muted-foreground);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color var(--osc-transition), color var(--osc-transition);
+
+  &:hover {
+    background: var(--border);
+    color: var(--foreground);
+  }
+}
+
+// ==========================================================================
+// Sticky Button (mobile popup trigger)
+// ==========================================================================
+
+.osc-sticky-btn {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9997;
+  padding: 1rem 1.5rem;
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  border: none;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  text-align: center;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  animation: osc-pulse 2s ease-in-out infinite;
+  transition: opacity var(--osc-transition);
+
+  &:hover {
+    opacity: 0.95;
+  }
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+}
+
+// ==========================================================================
+// Product Header
+// ==========================================================================
+
 .osc-product {
   display: flex;
-  gap: 1rem;
+  gap: 0.875rem;
   padding-bottom: 1.25rem;
   margin-bottom: 1.25rem;
   border-bottom: 1px solid var(--border);
 
   &__image {
     flex-shrink: 0;
-    width: 100px;
-    height: 100px;
-    border-radius: var(--radius);
+    width: 88px;
+    height: 88px;
+    border-radius: var(--osc-radius);
     overflow: hidden;
     background-color: var(--muted);
 
@@ -38,71 +241,307 @@
     }
 
     @media (min-width: 768px) {
-      width: 120px;
-      height: 120px;
+      width: 110px;
+      height: 110px;
     }
   }
 
   &__info {
     flex: 1;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.25rem;
+  }
+
+  &__name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--foreground);
+    line-height: 1.3;
+    margin: 0;
+
+    @media (min-width: 768px) {
+      font-size: 1.125rem;
+    }
+  }
+
+  &__variant {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    margin-top: 0.125rem;
+  }
+
+  &__price {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.375rem;
+  }
+
+  &__price-original {
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+    text-decoration: line-through;
+  }
+
+  &__price-current {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--foreground);
+  }
+
+  &__price-badge {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    background-color: var(--destructive);
+    color: #fff;
   }
 }
 
-/* Quantity Controls */
-.osc-qty {
+// ==========================================================================
+// Section Title
+// ==========================================================================
+
+.osc-section-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 0 0 0.75rem;
+}
+
+// ==========================================================================
+// Quantity Offers (radio cards)
+// ==========================================================================
+
+.osc-offers {
+  margin-bottom: 1.25rem;
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+.osc-offer-card {
+  position: relative;
   display: flex;
   align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.875rem;
+  border: 2px solid var(--border);
+  border-radius: var(--osc-radius);
+  background: var(--card);
+  cursor: pointer;
+  transition: border-color var(--osc-transition), background-color var(--osc-transition), box-shadow var(--osc-transition);
+  overflow: hidden;
 
-  &__controls {
-    display: inline-flex;
-    align-items: center;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
+  &:hover {
+    border-color: color-mix(in srgb, var(--primary) 40%, var(--border));
   }
 
-  &__btn {
-    width: 32px;
-    height: 32px;
+  &--selected {
+    border-color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 5%, var(--card));
+    box-shadow: 0 0 0 1px var(--primary);
+  }
+
+  &__radio {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
+  &__check {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--card);
-    color: var(--foreground);
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.15s;
+    transition: all var(--osc-transition);
+    color: transparent;
 
-    &:hover:not(:disabled) {
-      background-color: var(--accent);
-    }
-
-    &:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
+    .osc-offer-card--selected & {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: var(--primary-foreground);
     }
   }
 
-  &__value {
-    min-width: 36px;
-    text-align: center;
-    font-size: 0.875rem;
+  &__content {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  &__label {
+    font-size: 0.8125rem;
     font-weight: 500;
-    user-select: none;
+    color: var(--foreground);
+  }
+
+  &__price {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--foreground);
+    white-space: nowrap;
+  }
+
+  &__badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.1875rem 0.5rem;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border-radius: 0 calc(var(--osc-radius) - 2px) 0 0.375rem;
   }
 }
 
-/* Form */
+// ==========================================================================
+// 1-Tick Upsells (checkbox cards)
+// ==========================================================================
+
+.osc-upsells {
+  margin-bottom: 1.25rem;
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+.osc-upsell-card {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--osc-radius);
+  background: var(--card);
+  cursor: pointer;
+  transition: border-color var(--osc-transition), background-color var(--osc-transition);
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--primary) 40%, var(--border));
+  }
+
+  &--selected {
+    border-color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 5%, var(--card));
+  }
+
+  &__checkbox {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
+  &__check {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border);
+    border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--osc-transition);
+    color: transparent;
+
+    .osc-upsell-card--selected & {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: var(--primary-foreground);
+    }
+  }
+
+  &__image {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 0.25rem;
+    background: var(--muted);
+  }
+
+  &__content {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--foreground);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__price {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary);
+    white-space: nowrap;
+  }
+}
+
+// ==========================================================================
+// Form
+// ==========================================================================
+
 .osc-form {
-  h2 {
-    font-size: 1rem;
-  }
+  // no extra margin needed
 }
 
+// Form Field
 .osc-field {
-  margin-bottom: 0.875rem;
+  margin-bottom: 0.75rem;
+
+  &--error {
+    .osc-input,
+    .osc-select,
+    .osc-textarea {
+      border-color: var(--destructive);
+
+      &:focus {
+        box-shadow: 0 0 0 2px oklch(from var(--destructive) l c h / 0.15);
+      }
+    }
+  }
+
+  &__error {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--destructive);
+    margin-top: 0.25rem;
+    animation: osc-fade-in 0.15s ease;
+  }
 }
 
 .osc-label {
@@ -111,31 +550,44 @@
   font-weight: 500;
   color: var(--muted-foreground);
   margin-bottom: 0.375rem;
+
+  &__optional {
+    font-weight: 400;
+    font-size: 0.6875rem;
+    opacity: 0.7;
+  }
 }
 
 .osc-input,
-.osc-select {
+.osc-select,
+.osc-textarea {
   width: 100%;
   padding: 0.625rem 0.75rem;
-  font-size: 0.875rem;
+  font-size: 1rem; // 16px prevents iOS zoom
   color: var(--foreground);
   background-color: var(--card);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--osc-radius);
   outline: none;
-  transition: border-color 0.15s;
+  transition: border-color var(--osc-transition), box-shadow var(--osc-transition);
   -webkit-appearance: none;
   appearance: none;
 
   &::placeholder {
     color: var(--muted-foreground);
-    opacity: 0.6;
+    opacity: 0.5;
   }
 
   &:focus {
-    border-color: var(--ring);
-    box-shadow: 0 0 0 2px oklch(from var(--ring) l c h / 0.15);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px oklch(from var(--primary) l c h / 0.12);
   }
+}
+
+.osc-textarea {
+  resize: vertical;
+  min-height: 56px;
+  font-family: inherit;
 }
 
 .osc-select {
@@ -145,7 +597,7 @@
   padding-right: 2rem;
 }
 
-/* Phone Input Group */
+// Phone Input
 .osc-phone-group {
   display: flex;
   align-items: stretch;
@@ -154,14 +606,15 @@
 .osc-phone-prefix {
   display: flex;
   align-items: center;
-  padding: 0 0.75rem;
+  padding: 0 0.625rem;
   font-size: 0.875rem;
   color: var(--muted-foreground);
   background-color: var(--muted);
   border: 1px solid var(--border);
   border-right: none;
-  border-radius: var(--radius) 0 0 var(--radius);
+  border-radius: var(--osc-radius) 0 0 var(--osc-radius);
   white-space: nowrap;
+  gap: 0.25rem;
 }
 
 .osc-input--phone {
@@ -169,17 +622,99 @@
   border-bottom-left-radius: 0;
 }
 
-/* Payment Badge */
+// Discount Code
+.osc-discount-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.osc-input--discount {
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.osc-discount-btn {
+  flex-shrink: 0;
+  padding: 0.625rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: transparent;
+  border: 1px solid var(--primary);
+  border-radius: var(--osc-radius);
+  cursor: pointer;
+  transition: background-color var(--osc-transition), color var(--osc-transition);
+
+  &:hover:not(:disabled) {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.osc-discount-applied {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: color-mix(in srgb, var(--primary) 8%, var(--card));
+  border: 1px solid var(--primary);
+  border-radius: var(--osc-radius);
+
+  &__code {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--foreground);
+    letter-spacing: 0.04em;
+  }
+
+  &__amount {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-left: auto;
+  }
+
+  &__remove {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: none;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color var(--osc-transition), color var(--osc-transition);
+
+    &:hover {
+      background: var(--muted);
+      color: var(--destructive);
+    }
+  }
+}
+
+// ==========================================================================
+// Payment Badge
+// ==========================================================================
+
 .osc-payment-badge {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.875rem;
-  margin-top: 0.5rem;
+  padding: 0.75rem 0.875rem;
+  margin-top: 0.75rem;
   margin-bottom: 1rem;
   background-color: var(--muted);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--osc-radius);
 
   &__icon {
     flex-shrink: 0;
@@ -189,48 +724,371 @@
   &__text {
     display: flex;
     flex-direction: column;
-    gap: 0.125rem;
+    gap: 0.0625rem;
+  }
+
+  &__title {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--foreground);
+  }
+
+  &__subtitle {
+    font-size: 0.6875rem;
+    color: var(--muted-foreground);
   }
 }
 
-/* Total Section */
-.osc-total {
-  padding: 1rem 0;
-  margin-bottom: 1rem;
+// ==========================================================================
+// Price Summary
+// ==========================================================================
+
+.osc-summary {
+  padding: 0.875rem 0;
+  margin-bottom: 0.75rem;
   border-top: 1px solid var(--border);
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+    padding: 0.25rem 0;
+
+    &--discount {
+      color: var(--primary);
+    }
+
+    &--total {
+      font-size: 1.0625rem;
+      font-weight: 700;
+      color: var(--foreground);
+      padding-top: 0.5rem;
+    }
+  }
 
   &__divider {
     height: 1px;
-    background-color: var(--border);
-    margin: 0.625rem 0;
+    background: var(--border);
+    margin: 0.5rem 0;
   }
 }
 
-/* Submit Button */
+// ==========================================================================
+// Error Banner
+// ==========================================================================
+
+.osc-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--destructive);
+  background: color-mix(in srgb, var(--destructive) 8%, var(--background));
+  border: 1px solid color-mix(in srgb, var(--destructive) 25%, transparent);
+  border-radius: var(--osc-radius);
+  animation: osc-fade-in 0.2s ease;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+// ==========================================================================
+// Submit Button
+// ==========================================================================
+
 .osc-submit {
   width: 100%;
   padding: 0.9375rem 1.5rem;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--primary-foreground);
-  background-color: var(--primary);
+  background: var(--primary);
   border: none;
-  border-radius: var(--radius);
+  border-radius: var(--osc-radius);
   cursor: pointer;
-  transition: opacity 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   letter-spacing: 0.01em;
+  transition: opacity var(--osc-transition), transform var(--osc-transition), box-shadow var(--osc-transition);
+  box-shadow: 0 2px 8px oklch(from var(--primary) l c h / 0.3);
 
   &:hover:not(:disabled) {
-    opacity: 0.9;
+    opacity: 0.92;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px oklch(from var(--primary) l c h / 0.35);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 1px 4px oklch(from var(--primary) l c h / 0.2);
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    box-shadow: none;
   }
 }
 
-/* Loading State */
-.osc-loading {
-  min-height: 60vh;
+// ==========================================================================
+// Out of Stock
+// ==========================================================================
+
+.osc-out-of-stock {
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--destructive);
+  margin-top: 0.5rem;
+}
+
+// ==========================================================================
+// Urgency Timer
+// ==========================================================================
+
+.osc-urgency {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--destructive);
+  background: color-mix(in srgb, var(--destructive) 6%, var(--background));
+  border-radius: var(--osc-radius);
+  animation: osc-pulse 2.5s ease-in-out infinite;
+
+  strong {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+// ==========================================================================
+// Trust Badges
+// ==========================================================================
+
+.osc-trust {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 0.3125rem;
+    font-size: 0.6875rem;
+    color: var(--muted-foreground);
+    white-space: nowrap;
+
+    svg {
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+  }
+}
+
+// ==========================================================================
+// Order Success
+// ==========================================================================
+
+.osc-success {
+  text-align: center;
+  padding: 3rem 1rem;
+
+  &__icon {
+    color: var(--primary);
+    margin-bottom: 1rem;
+    animation: osc-fade-in 0.4s ease;
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--foreground);
+    margin: 0 0 0.5rem;
+  }
+
+  &__order {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    margin: 0 0 1rem;
+  }
+
+  &__message {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    line-height: 1.6;
+    margin: 0 0 1.5rem;
+
+    strong {
+      color: var(--foreground);
+    }
+  }
+
+  &__cod {
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+    padding: 0.75rem;
+    background: var(--muted);
+    border-radius: var(--osc-radius);
+  }
+}
+
+// ==========================================================================
+// Post-Purchase Upsell Overlay
+// ==========================================================================
+
+.osc-pp-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: osc-fade-in 0.3s ease;
+}
+
+.osc-pp-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--background);
+  border-radius: var(--osc-radius);
+  padding: 1.5rem;
+  text-align: center;
+  animation: osc-slide-up 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.osc-pp-timer {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--destructive);
+  background: color-mix(in srgb, var(--destructive) 8%, var(--background));
+  padding: 0.375rem 0.75rem;
+  border-radius: 999px;
+  margin-bottom: 1rem;
+  font-variant-numeric: tabular-nums;
+  animation: osc-pulse 1.5s ease-in-out infinite;
+}
+
+.osc-pp-headline {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0 0 1rem;
+  line-height: 1.3;
+}
+
+.osc-pp-product {
+  display: flex;
+  gap: 0.875rem;
+  text-align: left;
+  margin-bottom: 1.25rem;
+  padding: 0.875rem;
+  background: var(--muted);
+  border-radius: var(--osc-radius);
+}
+
+.osc-pp-image {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 0.375rem;
+  flex-shrink: 0;
+  background: var(--card);
+}
+
+.osc-pp-info {
+  flex: 1;
+  min-width: 0;
+
+  h3 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin: 0 0 0.25rem;
+  }
+}
+
+.osc-pp-description {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  margin: 0 0 0.5rem;
+  line-height: 1.4;
+}
+
+.osc-pp-pricing {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.osc-pp-original {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  text-decoration: line-through;
+}
+
+.osc-pp-price {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.osc-pp-accept {
+  width: 100%;
+  padding: 0.875rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--primary-foreground);
+  background: var(--primary);
+  border: none;
+  border-radius: var(--osc-radius);
+  cursor: pointer;
+  margin-bottom: 0.625rem;
+  transition: opacity var(--osc-transition);
+  box-shadow: 0 2px 8px oklch(from var(--primary) l c h / 0.25);
+
+  &:hover {
+    opacity: 0.92;
+  }
+}
+
+.osc-pp-decline {
+  width: 100%;
+  padding: 0.625rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color var(--osc-transition);
+
+  &:hover {
+    color: var(--foreground);
+  }
 }

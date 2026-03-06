@@ -1,0 +1,1 @@
+[{ "method": "GET", "path": "/api/cod/upsells/:product_id" }]

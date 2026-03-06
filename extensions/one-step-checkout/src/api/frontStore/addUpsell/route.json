@@ -1,0 +1,1 @@
+[{ "method": "POST", "path": "/api/cod/orders/:order_id/upsell" }]
