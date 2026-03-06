@@ -1,0 +1,1 @@
+[{ "method": "POST", "path": "/api/cod/conditional-rules/check", "access": "public" }]

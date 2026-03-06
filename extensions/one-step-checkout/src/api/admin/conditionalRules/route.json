@@ -1,0 +1,5 @@
+[
+  { "method": "GET", "path": "/api/cod/admin/conditional-rules", "access": "private" },
+  { "method": "POST", "path": "/api/cod/admin/conditional-rules", "access": "private" },
+  { "method": "DELETE", "path": "/api/cod/admin/conditional-rules", "access": "private" }
+]

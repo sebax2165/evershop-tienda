@@ -68,6 +68,12 @@ interface PostPurchaseUpsell {
   timerSeconds: number;
 }
 
+interface PartialPaymentConfig {
+  enabled: boolean;
+  depositType: 'percentage' | 'fixed';
+  depositValue: number;
+}
+
 interface OneStepCheckoutProps {
   product: Product;
   formMode?: 'popup' | 'embedded';
@@ -76,6 +82,7 @@ interface OneStepCheckoutProps {
   postPurchaseUpsell?: PostPurchaseUpsell;
   shippingCost?: number;
   codFee?: number;
+  partialPayment?: PartialPaymentConfig;
   urgencyTimerMinutes?: number;
   variantInfo?: string;
 }
@@ -165,6 +172,7 @@ export default function OneStepCheckout({
   postPurchaseUpsell,
   shippingCost = 0,
   codFee = 0,
+  partialPayment,
   urgencyTimerMinutes,
   variantInfo
 }: OneStepCheckoutProps) {
@@ -191,6 +199,7 @@ export default function OneStepCheckout({
   const [orderNumber, setOrderNumber] = useState<number | null>(null);
   const [showPostPurchase, setShowPostPurchase] = useState(false);
   const [postPurchaseTimer, setPostPurchaseTimer] = useState(0);
+  const [paymentMode, setPaymentMode] = useState<'cod' | 'partial'>('cod');
   const formRef = useRef<HTMLFormElement>(null);
 
   const { submitCheckout, loading: isSubmitting, error: checkoutError } = useOneStepCheckout({
@@ -239,6 +248,17 @@ export default function OneStepCheckout({
   const subtotalAfterCoupon = subtotalWithUpsells - couponDiscount;
   const totalBeforeFees = subtotalAfterCoupon;
   const grandTotal = totalBeforeFees + shippingCost + codFee;
+
+  // Partial payment calculations
+  const partialEnabled = partialPayment?.enabled || false;
+  const depositAmount = partialEnabled
+    ? partialPayment?.depositType === 'percentage'
+      ? grandTotal * (partialPayment?.depositValue || 0) / 100
+      : Math.min(partialPayment?.depositValue || 0, grandTotal)
+    : 0;
+  const codRemainder = partialEnabled && paymentMode === 'partial'
+    ? grandTotal - depositAmount
+    : grandTotal;
 
   const currencySymbol = selectedCountry?.currencySymbol || '$';
 
@@ -482,7 +502,9 @@ export default function OneStepCheckout({
               para coordinar la entrega.
             </p>
             <div className="osc-success__cod">
-              Pago contra entrega -- pagas cuando recibas tu producto.
+              {paymentMode === 'partial' && partialEnabled
+                ? `Deposito pagado: ${formatPrice(depositAmount)}. Restante al recibir: ${formatPrice(grandTotal - depositAmount)}.`
+                : 'Pago contra entrega -- pagas cuando recibas tu producto.'}
             </div>
           </div>
         </div>
@@ -821,19 +843,59 @@ export default function OneStepCheckout({
           {/* ================================================================
               5. Shipping & COD Fee + Payment Badge
           ================================================================ */}
-          <div className="osc-payment-badge">
-            <div className="osc-payment-badge__icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
-                <line x1="1" y1="10" x2="23" y2="10" />
-              </svg>
-            </div>
-            <div className="osc-payment-badge__text">
-              <span className="osc-payment-badge__title">Pago Contra Entrega</span>
-              <span className="osc-payment-badge__subtitle">
-                Pagas cuando recibas tu pedido
-              </span>
-            </div>
+          {/* Payment Method Selection */}
+          <div className="osc-payment-section">
+            <h2 className="osc-section-title">Metodo de pago</h2>
+
+            {/* COD Option */}
+            <label className={`osc-payment-option ${paymentMode === 'cod' ? 'osc-payment-option--selected' : ''}`}>
+              <input
+                type="radio"
+                name="payment-mode"
+                value="cod"
+                checked={paymentMode === 'cod'}
+                onChange={() => setPaymentMode('cod')}
+                className="osc-payment-option__radio"
+              />
+              <div className="osc-payment-option__icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                  <line x1="1" y1="10" x2="23" y2="10" />
+                </svg>
+              </div>
+              <div className="osc-payment-option__text">
+                <span className="osc-payment-option__title">Pago Contra Entrega</span>
+                <span className="osc-payment-option__subtitle">
+                  Pagas {formatPrice(grandTotal)} cuando recibas tu pedido
+                </span>
+              </div>
+            </label>
+
+            {/* Partial Payment Option - only show if enabled */}
+            {partialEnabled && depositAmount > 0 && (
+              <label className={`osc-payment-option ${paymentMode === 'partial' ? 'osc-payment-option--selected' : ''}`}>
+                <input
+                  type="radio"
+                  name="payment-mode"
+                  value="partial"
+                  checked={paymentMode === 'partial'}
+                  onChange={() => setPaymentMode('partial')}
+                  className="osc-payment-option__radio"
+                />
+                <div className="osc-payment-option__icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    <path d="M9 12l2 2 4-4" />
+                  </svg>
+                </div>
+                <div className="osc-payment-option__text">
+                  <span className="osc-payment-option__title">Pago Parcial + Contra Entrega</span>
+                  <span className="osc-payment-option__subtitle">
+                    Pagas ahora: {formatPrice(depositAmount)} | Al recibir: {formatPrice(grandTotal - depositAmount)}
+                  </span>
+                </div>
+              </label>
+            )}
           </div>
 
           {/* ================================================================
@@ -884,6 +946,21 @@ export default function OneStepCheckout({
               <span>TOTAL</span>
               <span>{formatPrice(grandTotal)}</span>
             </div>
+
+            {/* Partial payment breakdown */}
+            {partialEnabled && paymentMode === 'partial' && depositAmount > 0 && (
+              <>
+                <div className="osc-summary__divider" />
+                <div className="osc-summary__row osc-summary__row--deposit">
+                  <span>Pagas ahora (deposito)</span>
+                  <span>{formatPrice(depositAmount)}</span>
+                </div>
+                <div className="osc-summary__row osc-summary__row--cod-remainder">
+                  <span>Pagas al recibir</span>
+                  <span>{formatPrice(grandTotal - depositAmount)}</span>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Error Message */}
@@ -916,7 +993,11 @@ export default function OneStepCheckout({
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
-                <span>Confirmar Pedido - {formatPrice(grandTotal)}</span>
+                <span>
+                  {paymentMode === 'partial' && partialEnabled
+                    ? `Pagar Deposito ${formatPrice(depositAmount)} - Confirmar Pedido`
+                    : `Confirmar Pedido - ${formatPrice(grandTotal)}`}
+                </span>
               </>
             )}
           </button>

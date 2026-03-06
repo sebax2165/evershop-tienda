@@ -1,0 +1,1 @@
+[{ "method": "POST", "path": "/api/cod/otp/send", "access": "public" }]

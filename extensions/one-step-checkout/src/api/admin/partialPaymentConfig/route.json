@@ -1,0 +1,4 @@
+[
+  { "method": "GET", "path": "/api/cod/admin/partial-payment-config", "access": "private" },
+  { "method": "POST", "path": "/api/cod/admin/partial-payment-config", "access": "private" }
+]
