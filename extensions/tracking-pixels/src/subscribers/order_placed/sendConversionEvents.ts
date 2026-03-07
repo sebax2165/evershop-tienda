@@ -4,12 +4,47 @@ import { pool } from '@evershop/evershop/lib/postgres';
 import { getSetting } from '@evershop/evershop/setting/services';
 import { error as logError, debug } from '@evershop/evershop/lib/log';
 
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
 function sha256Hash(value: string): string {
   if (!value) return '';
   return crypto
     .createHash('sha256')
     .update(value.trim().toLowerCase())
     .digest('hex');
+}
+
+/** Normalize phone to E.164: strip non-digits, prepend country code */
+function normalizePhone(phone: string, countryCode?: string): string {
+  if (!phone) return '';
+  // Strip all non-digit chars except leading +
+  let digits = phone.replace(/[^\d+]/g, '');
+  // Remove leading + to get pure digits
+  if (digits.startsWith('+')) {
+    digits = digits.substring(1);
+  }
+  // If it's a short number (no country code), prepend based on country
+  const countryPhoneCodes: Record<string, string> = {
+    CO: '57', MX: '52', AR: '54', CL: '56', PE: '51',
+    EC: '593', BR: '55', VE: '58', PA: '507', CR: '506',
+    DO: '1', GT: '502', HN: '504', SV: '503', BO: '591',
+    PY: '595', UY: '598', NI: '505', US: '1', ES: '34'
+  };
+  // If number is 10 digits or less, it likely needs a country code
+  if (digits.length <= 10 && countryCode) {
+    const prefix = countryPhoneCodes[countryCode.toUpperCase()];
+    if (prefix && !digits.startsWith(prefix)) {
+      digits = prefix + digits;
+    }
+  }
+  return '+' + digits;
+}
+
+/** Sanitize pixel ID to alphanumeric only */
+function sanitizePixelId(id: string): string {
+  return (id || '').replace(/[^a-zA-Z0-9_-]/g, '');
 }
 
 // ---------------------------------------------------------------------------
@@ -31,10 +66,16 @@ async function sendFacebookConversionEvent(
     userData.em = sha256Hash(shippingAddress.email);
   }
   if (shippingAddress?.telephone) {
-    userData.ph = sha256Hash(shippingAddress.telephone);
+    const phone = normalizePhone(
+      shippingAddress.telephone,
+      shippingAddress?.country
+    );
+    if (phone.length > 2) {
+      userData.ph = sha256Hash(phone);
+    }
   }
   if (shippingAddress?.full_name) {
-    const nameParts = shippingAddress.full_name.split(' ');
+    const nameParts = shippingAddress.full_name.trim().split(/\s+/);
     if (nameParts.length > 0) {
       userData.fn = sha256Hash(nameParts[0]);
     }
@@ -43,7 +84,11 @@ async function sendFacebookConversionEvent(
     }
   }
   if (shippingAddress?.country) {
-    userData.country = sha256Hash(shippingAddress.country);
+    // Meta requires lowercase 2-letter ISO code
+    const country = shippingAddress.country.trim().toLowerCase();
+    if (country.length === 2) {
+      userData.country = sha256Hash(country);
+    }
   }
   if (shippingAddress?.city) {
     userData.ct = sha256Hash(shippingAddress.city);
@@ -81,26 +126,28 @@ async function sendFacebookConversionEvent(
           num_items: items.length
         }
       }
-    ]
+    ],
+    // Pass access_token in body instead of URL for security
+    access_token: accessToken
   };
 
   try {
-    const url = `https://graph.facebook.com/v21.0/${pixelId}/events?access_token=${encodeURIComponent(accessToken)}`;
+    const safePixelId = sanitizePixelId(pixelId);
+    const url = `https://graph.facebook.com/v21.0/${safePixelId}/events`;
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
 
+    const body = await response.text();
     if (!response.ok) {
-      const body = await response.text();
       logError(
         `Facebook Conversions API error: ${response.status} - ${body}`
       );
     } else {
-      const result = await response.json();
       debug(
-        `Facebook Conversions API: Purchase event sent successfully. events_received: ${result?.events_received || 0}`
+        `Facebook Conversions API: Purchase event sent. ${body}`
       );
     }
   } catch (err) {
@@ -113,7 +160,6 @@ async function sendFacebookConversionEvent(
 // ---------------------------------------------------------------------------
 // TikTok Events API v1.3
 // https://business-api.tiktok.com/open_api/v1.3/event/track/
-// Docs: https://business-api.tiktok.com/portal/docs
 // ---------------------------------------------------------------------------
 
 async function sendTikTokConversionEvent(
@@ -125,23 +171,20 @@ async function sendTikTokConversionEvent(
 ) {
   const eventTime = Math.floor(Date.now() / 1000);
 
-  // User data — hashed where required
+  // User data — hashed where required per TikTok spec
   const user: Record<string, any> = {};
   if (shippingAddress?.email) {
     user.email = sha256Hash(shippingAddress.email);
   }
   if (shippingAddress?.telephone) {
-    // TikTok requires phone with country code prefix, hashed
-    let phone = shippingAddress.telephone.replace(/\s+/g, '');
-    if (!phone.startsWith('+')) {
-      phone = '+' + phone;
-    }
-    user.phone = sha256Hash(phone);
-  }
-  if (shippingAddress?.full_name) {
-    user.external_id = sha256Hash(
-      shippingAddress.full_name + '_' + (shippingAddress.telephone || '')
+    const phone = normalizePhone(
+      shippingAddress.telephone,
+      shippingAddress?.country
     );
+    if (phone.length > 2) {
+      // TikTok: hash the E.164 phone number
+      user.phone = sha256Hash(phone);
+    }
   }
 
   // Contents array per TikTok spec
@@ -158,7 +201,7 @@ async function sendTikTokConversionEvent(
   // TikTok Events API v1.3 payload format
   const payload = {
     event_source: 'web',
-    event_source_id: pixelCode,
+    event_source_id: sanitizePixelId(pixelCode),
     data: [
       {
         event: 'CompletePayment',
@@ -189,14 +232,13 @@ async function sendTikTokConversionEvent(
     });
 
     const body = await response.text();
-
     if (!response.ok) {
       logError(
         `TikTok Events API error: ${response.status} - ${body}`
       );
     } else {
       debug(
-        `TikTok Events API: CompletePayment event sent successfully. Response: ${body}`
+        `TikTok Events API: CompletePayment event sent. ${body}`
       );
     }
   } catch (err) {
@@ -246,29 +288,13 @@ export default async function sendConversionEvents(data: {
         .load(pool);
     }
 
-    // Facebook Conversions API
+    // Gather settings
     const fbEnabled = await getSetting('trackingFacebookEnabled', '');
     const fbPixelId = await getSetting('trackingFacebookPixelId', '');
     const fbAccessToken = await getSetting(
       'trackingFacebookAccessToken',
       ''
     );
-
-    if (
-      (fbEnabled === '1' || fbEnabled === 'true' || fbEnabled === true) &&
-      fbPixelId &&
-      fbAccessToken
-    ) {
-      await sendFacebookConversionEvent(
-        fbPixelId,
-        fbAccessToken,
-        order,
-        items,
-        shippingAddress
-      );
-    }
-
-    // TikTok Events API
     const ttEnabled = await getSetting('trackingTiktokEnabled', '');
     const ttPixelId = await getSetting('trackingTiktokPixelId', '');
     const ttAccessToken = await getSetting(
@@ -276,19 +302,37 @@ export default async function sendConversionEvents(data: {
       ''
     );
 
-    if (
-      (ttEnabled === '1' || ttEnabled === 'true' || ttEnabled === true) &&
-      ttPixelId &&
-      ttAccessToken
-    ) {
-      await sendTikTokConversionEvent(
-        ttPixelId,
-        ttAccessToken,
-        order,
-        items,
-        shippingAddress
+    const isEnabled = (val: any) =>
+      val === '1' || val === 'true' || val === true;
+
+    // Fire both API calls in parallel
+    const promises: Promise<void>[] = [];
+
+    if (isEnabled(fbEnabled) && fbPixelId && fbAccessToken) {
+      promises.push(
+        sendFacebookConversionEvent(
+          fbPixelId,
+          fbAccessToken,
+          order,
+          items,
+          shippingAddress
+        )
       );
     }
+
+    if (isEnabled(ttEnabled) && ttPixelId && ttAccessToken) {
+      promises.push(
+        sendTikTokConversionEvent(
+          ttPixelId,
+          ttAccessToken,
+          order,
+          items,
+          shippingAddress
+        )
+      );
+    }
+
+    await Promise.allSettled(promises);
   } catch (err) {
     logError(
       `sendConversionEvents failed: ${(err as Error).message}`

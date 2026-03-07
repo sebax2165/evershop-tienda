@@ -8,3 +8,12 @@ type TrackingSettings {
   tiktokPixelId: String
   tiktokEnabled: Boolean
 }
+
+extend type Setting {
+  trackingFacebookPixelId: String
+  trackingFacebookAccessToken: String
+  trackingFacebookEnabled: String
+  trackingTiktokPixelId: String
+  trackingTiktokAccessToken: String
+  trackingTiktokEnabled: String
+}

@@ -311,6 +311,7 @@ export default function OneStepCheckout({
     : grandTotal;
 
   const currencySymbol = selectedCountry?.currencySymbol || '$';
+  const currencyCode = selectedCountry?.currency || 'COP';
 
   const formatPrice = useCallback(
     (value: number) => `${currencySymbol}${Math.round(value).toLocaleString()}`,
@@ -325,7 +326,7 @@ export default function OneStepCheckout({
         content_ids: [product.sku || String(product.productId)],
         content_type: 'product',
         value: basePrice,
-        currency: 'COP'
+        currency: currencyCode
       });
     }
   }, []);
@@ -335,8 +336,11 @@ export default function OneStepCheckout({
     if (!hasTrackedInitiateCheckout.current) {
       hasTrackedInitiateCheckout.current = true;
       firePixelEvent('InitiateCheckout', {
+        content_ids: [product.sku || String(product.productId)],
+        content_type: 'product',
         value: grandTotal,
-        currency: 'COP'
+        currency: currencyCode,
+        num_items: 1
       });
     }
   };
@@ -439,8 +443,9 @@ export default function OneStepCheckout({
     firePixelEvent('Lead', {
       content_name: product.name,
       content_ids: [product.sku || String(product.productId)],
+      content_type: 'product',
       value: grandTotal,
-      currency: 'COP'
+      currency: currencyCode
     });
 
     const result = await submitCheckout(
@@ -458,6 +463,16 @@ export default function OneStepCheckout({
     );
 
     if (result) {
+      // --- Pixel: Purchase / CompletePayment event (client-side) ---
+      firePixelEvent('Purchase', {
+        content_name: product.name,
+        content_ids: [product.sku || String(product.productId)],
+        content_type: 'product',
+        value: grandTotal,
+        currency: currencyCode,
+        num_items: quantity
+      });
+
       setOrderNumber(result.orderNumber);
       if (ppUpsell) {
         setShowPostPurchase(true);

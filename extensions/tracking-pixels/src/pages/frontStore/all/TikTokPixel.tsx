@@ -16,7 +16,11 @@ export default function TikTokPixel({ trackingSettings }: TikTokPixelProps) {
     return null;
   }
 
-  const pixelId = trackingSettings.tiktokPixelId;
+  // Sanitize pixel ID to prevent XSS via dangerouslySetInnerHTML
+  const pixelId = trackingSettings.tiktokPixelId.replace(
+    /[^a-zA-Z0-9]/g,
+    ''
+  );
 
   // TikTok Pixel base code - loads the SDK and fires PageView
   // Standard events (ViewContent, InitiateCheckout, etc.) are fired

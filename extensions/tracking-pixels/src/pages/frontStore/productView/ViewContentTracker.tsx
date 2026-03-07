@@ -43,16 +43,21 @@ export default function ViewContentTracker({
 
   let script = '';
 
+  // Sanitize values for safe inline script injection
+  const safeContentId = JSON.stringify(contentId);
+  const safeName = JSON.stringify(product.name);
+  const safeCurrency = JSON.stringify(currency);
+
   // Facebook Pixel - ViewContent
   if (hasFb) {
     script += `
       if (typeof fbq === 'function') {
         fbq('track', 'ViewContent', {
-          content_name: ${JSON.stringify(product.name)},
-          content_ids: ['${contentId}'],
+          content_name: ${safeName},
+          content_ids: [${safeContentId}],
           content_type: 'product',
           value: ${value},
-          currency: '${currency}'
+          currency: ${safeCurrency}
         });
       }
     `;
@@ -65,12 +70,12 @@ export default function ViewContentTracker({
       if (typeof ttq !== 'undefined' && ttq.track) {
         ttq.track('ViewContent', {
           contents: [{
-            content_id: '${contentId}',
+            content_id: ${safeContentId},
             content_type: 'product',
-            content_name: ${JSON.stringify(product.name)}
+            content_name: ${safeName}
           }],
           value: ${value},
-          currency: '${currency}'
+          currency: ${safeCurrency}
         });
       }
     `;

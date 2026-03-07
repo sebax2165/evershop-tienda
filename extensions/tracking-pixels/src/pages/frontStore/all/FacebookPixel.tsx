@@ -18,7 +18,11 @@ export default function FacebookPixel({
     return null;
   }
 
-  const pixelId = trackingSettings.facebookPixelId;
+  // Sanitize pixel ID to prevent XSS via dangerouslySetInnerHTML
+  const pixelId = trackingSettings.facebookPixelId.replace(
+    /[^a-zA-Z0-9]/g,
+    ''
+  );
 
   const pixelScript = `
     !function(f,b,e,v,n,t,s)
