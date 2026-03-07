@@ -37,33 +37,40 @@ export default function ViewContentTracker({
     return null;
   }
 
-  const contentData = {
-    content_name: product.name,
-    content_ids: [String(product.sku || product.productId)],
-    content_type: 'product',
-    value: product.price?.regular?.value || 0,
-    currency: product.price?.regular?.currency || 'USD'
-  };
+  const contentId = String(product.sku || product.productId);
+  const value = product.price?.regular?.value || 0;
+  const currency = product.price?.regular?.currency || 'COP';
 
   let script = '';
 
+  // Facebook Pixel - ViewContent
   if (hasFb) {
     script += `
       if (typeof fbq === 'function') {
-        fbq('track', 'ViewContent', ${JSON.stringify(contentData)});
+        fbq('track', 'ViewContent', {
+          content_name: ${JSON.stringify(product.name)},
+          content_ids: ['${contentId}'],
+          content_type: 'product',
+          value: ${value},
+          currency: '${currency}'
+        });
       }
     `;
   }
 
+  // TikTok Pixel - ViewContent
+  // Uses ttq.track with proper content parameters per TikTok docs
   if (hasTt) {
     script += `
-      if (typeof ttq !== 'undefined') {
+      if (typeof ttq !== 'undefined' && ttq.track) {
         ttq.track('ViewContent', {
-          content_id: '${product.sku || product.productId}',
-          content_type: 'product',
-          content_name: ${JSON.stringify(product.name)},
-          value: ${product.price?.regular?.value || 0},
-          currency: '${product.price?.regular?.currency || 'USD'}'
+          contents: [{
+            content_id: '${contentId}',
+            content_type: 'product',
+            content_name: ${JSON.stringify(product.name)}
+          }],
+          value: ${value},
+          currency: '${currency}'
         });
       }
     `;

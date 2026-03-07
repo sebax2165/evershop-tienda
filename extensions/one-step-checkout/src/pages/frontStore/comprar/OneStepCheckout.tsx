@@ -11,12 +11,17 @@ import { useOneStepCheckout } from './useOneStepCheckout.js';
 // ---------------------------------------------------------------------------
 
 const firePixelEvent = (eventName: string, params?: Record<string, any>) => {
+  if (typeof window === 'undefined') return;
+
   // Facebook Pixel
-  if (typeof window !== 'undefined' && (window as any).fbq) {
+  if ((window as any).fbq) {
     (window as any).fbq('track', eventName, params);
   }
-  // TikTok Pixel
-  if (typeof window !== 'undefined' && (window as any).ttq) {
+
+  // TikTok Pixel - map Facebook event names to TikTok standard events
+  // TikTok standard events: ViewContent, AddToCart, InitiateCheckout,
+  // CompletePayment, PlaceAnOrder, SubmitForm, Contact
+  if ((window as any).ttq) {
     const ttqEventMap: Record<string, string> = {
       'ViewContent': 'ViewContent',
       'InitiateCheckout': 'InitiateCheckout',
@@ -24,7 +29,29 @@ const firePixelEvent = (eventName: string, params?: Record<string, any>) => {
       'Purchase': 'CompletePayment',
       'AddToCart': 'AddToCart'
     };
-    (window as any).ttq.track(ttqEventMap[eventName] || eventName, params);
+    const ttEvent = ttqEventMap[eventName] || eventName;
+
+    // TikTok uses 'contents' array format in properties
+    const ttParams: Record<string, any> = {};
+    if (params?.value !== undefined) ttParams.value = params.value;
+    if (params?.currency) ttParams.currency = params.currency;
+    if (params?.content_type) ttParams.content_type = params.content_type;
+    if (params?.content_ids) {
+      ttParams.contents = params.content_ids.map((id: string) => ({
+        content_id: id,
+        content_type: params.content_type || 'product'
+      }));
+    }
+    if (params?.content_name) {
+      if (!ttParams.contents) ttParams.contents = [];
+      if (ttParams.contents.length > 0) {
+        ttParams.contents[0].content_name = params.content_name;
+      } else {
+        ttParams.contents.push({ content_name: params.content_name, content_type: 'product' });
+      }
+    }
+
+    (window as any).ttq.track(ttEvent, ttParams);
   }
 };
 

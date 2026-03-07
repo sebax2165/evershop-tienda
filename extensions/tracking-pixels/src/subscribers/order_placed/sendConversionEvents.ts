@@ -12,6 +12,11 @@ function sha256Hash(value: string): string {
     .digest('hex');
 }
 
+// ---------------------------------------------------------------------------
+// Facebook Conversions API
+// https://developers.facebook.com/docs/marketing-api/conversions-api
+// ---------------------------------------------------------------------------
+
 async function sendFacebookConversionEvent(
   pixelId: string,
   accessToken: string,
@@ -56,16 +61,18 @@ async function sendFacebookConversionEvent(
     item_price: parseFloat(item.final_price) || 0
   }));
 
+  const eventId = `purchase_${order.order_id}_${eventTime}`;
+
   const payload = {
     data: [
       {
         event_name: 'Purchase',
         event_time: eventTime,
         action_source: 'website',
-        event_id: `order_${order.order_id}_${eventTime}`,
+        event_id: eventId,
         user_data: userData,
         custom_data: {
-          currency: order.currency || 'USD',
+          currency: order.currency || 'COP',
           value: parseFloat(order.grand_total) || 0,
           content_ids: contentIds,
           contents: contents,
@@ -78,7 +85,7 @@ async function sendFacebookConversionEvent(
   };
 
   try {
-    const url = `https://graph.facebook.com/v18.0/${pixelId}/events?access_token=${encodeURIComponent(accessToken)}`;
+    const url = `https://graph.facebook.com/v21.0/${pixelId}/events?access_token=${encodeURIComponent(accessToken)}`;
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -91,30 +98,53 @@ async function sendFacebookConversionEvent(
         `Facebook Conversions API error: ${response.status} - ${body}`
       );
     } else {
-      debug('Facebook Conversions API: Purchase event sent successfully');
+      const result = await response.json();
+      debug(
+        `Facebook Conversions API: Purchase event sent successfully. events_received: ${result?.events_received || 0}`
+      );
     }
   } catch (err) {
-    logError(`Facebook Conversions API request failed: ${(err as Error).message}`);
+    logError(
+      `Facebook Conversions API request failed: ${(err as Error).message}`
+    );
   }
 }
 
+// ---------------------------------------------------------------------------
+// TikTok Events API v1.3
+// https://business-api.tiktok.com/open_api/v1.3/event/track/
+// Docs: https://business-api.tiktok.com/portal/docs
+// ---------------------------------------------------------------------------
+
 async function sendTikTokConversionEvent(
-  pixelId: string,
+  pixelCode: string,
   accessToken: string,
   order: any,
   items: any[],
   shippingAddress: any
 ) {
-  const eventTime = new Date().toISOString();
+  const eventTime = Math.floor(Date.now() / 1000);
 
-  const user: Record<string, string> = {};
+  // User data — hashed where required
+  const user: Record<string, any> = {};
   if (shippingAddress?.email) {
     user.email = sha256Hash(shippingAddress.email);
   }
   if (shippingAddress?.telephone) {
-    user.phone = sha256Hash(shippingAddress.telephone);
+    // TikTok requires phone with country code prefix, hashed
+    let phone = shippingAddress.telephone.replace(/\s+/g, '');
+    if (!phone.startsWith('+')) {
+      phone = '+' + phone;
+    }
+    user.phone = sha256Hash(phone);
+  }
+  if (shippingAddress?.full_name) {
+    user.external_id = sha256Hash(
+      shippingAddress.full_name + '_' + (shippingAddress.telephone || '')
+    );
   }
 
+  // Contents array per TikTok spec
   const contents = items.map((item) => ({
     content_id: item.product_sku || String(item.product_id),
     content_type: 'product',
@@ -123,21 +153,27 @@ async function sendTikTokConversionEvent(
     price: parseFloat(item.final_price) || 0
   }));
 
+  const eventId = `purchase_${order.order_id}_${eventTime}`;
+
+  // TikTok Events API v1.3 payload format
   const payload = {
-    pixel_code: pixelId,
-    event: 'CompletePayment',
-    event_id: `order_${order.order_id}_${Date.now()}`,
-    timestamp: eventTime,
-    context: {
-      user: user
-    },
-    properties: {
-      currency: order.currency || 'USD',
-      value: parseFloat(order.grand_total) || 0,
-      contents: contents,
-      content_type: 'product',
-      order_id: order.order_number || String(order.order_id)
-    }
+    event_source: 'web',
+    event_source_id: pixelCode,
+    data: [
+      {
+        event: 'CompletePayment',
+        event_id: eventId,
+        event_time: eventTime,
+        user: user,
+        properties: {
+          currency: order.currency || 'COP',
+          value: parseFloat(order.grand_total) || 0,
+          contents: contents,
+          content_type: 'product',
+          order_id: order.order_number || String(order.order_id)
+        }
+      }
+    ]
   };
 
   try {
@@ -152,18 +188,27 @@ async function sendTikTokConversionEvent(
       body: JSON.stringify(payload)
     });
 
+    const body = await response.text();
+
     if (!response.ok) {
-      const body = await response.text();
       logError(
         `TikTok Events API error: ${response.status} - ${body}`
       );
     } else {
-      debug('TikTok Events API: CompletePayment event sent successfully');
+      debug(
+        `TikTok Events API: CompletePayment event sent successfully. Response: ${body}`
+      );
     }
   } catch (err) {
-    logError(`TikTok Events API request failed: ${(err as Error).message}`);
+    logError(
+      `TikTok Events API request failed: ${(err as Error).message}`
+    );
   }
 }
+
+// ---------------------------------------------------------------------------
+// Main subscriber handler
+// ---------------------------------------------------------------------------
 
 export default async function sendConversionEvents(data: {
   order_id: number;
@@ -204,7 +249,10 @@ export default async function sendConversionEvents(data: {
     // Facebook Conversions API
     const fbEnabled = await getSetting('trackingFacebookEnabled', '');
     const fbPixelId = await getSetting('trackingFacebookPixelId', '');
-    const fbAccessToken = await getSetting('trackingFacebookAccessToken', '');
+    const fbAccessToken = await getSetting(
+      'trackingFacebookAccessToken',
+      ''
+    );
 
     if (
       (fbEnabled === '1' || fbEnabled === 'true' || fbEnabled === true) &&
@@ -223,7 +271,10 @@ export default async function sendConversionEvents(data: {
     // TikTok Events API
     const ttEnabled = await getSetting('trackingTiktokEnabled', '');
     const ttPixelId = await getSetting('trackingTiktokPixelId', '');
-    const ttAccessToken = await getSetting('trackingTiktokAccessToken', '');
+    const ttAccessToken = await getSetting(
+      'trackingTiktokAccessToken',
+      ''
+    );
 
     if (
       (ttEnabled === '1' || ttEnabled === 'true' || ttEnabled === true) &&
