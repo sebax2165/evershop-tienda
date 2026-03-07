@@ -2,6 +2,20 @@ import { select } from '@evershop/postgres-query-builder';
 import { camelCase } from '@evershop/evershop/lib/util/camelCase';
 
 export default {
+  Setting: {
+    dropiApiKey: (setting) => {
+      const row = setting.find((s) => s.name === 'dropiApiKey');
+      return row ? row.value : null;
+    },
+    dropiEnvironment: (setting) => {
+      const row = setting.find((s) => s.name === 'dropiEnvironment');
+      return row ? row.value : null;
+    },
+    dropiAutoSync: (setting) => {
+      const row = setting.find((s) => s.name === 'dropiAutoSync');
+      return row ? row.value : null;
+    }
+  },
   Query: {
     dropiOrderSync: async (_root: any, { orderUuid }: { orderUuid: string }, { pool }: any) => {
       // First get the order by UUID

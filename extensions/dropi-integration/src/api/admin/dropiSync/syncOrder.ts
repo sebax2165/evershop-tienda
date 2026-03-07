@@ -11,28 +11,30 @@ export default async (request, response) => {
   try {
     const { order_id } = request.params;
 
-    // 1. Load Dropi config
+    // 1. Load Dropi config (dropi_config table first, then setting table)
+    let token: string | null = null;
+    let environment = 'test';
+
     const config = await select()
       .from('dropi_config')
       .where('enabled', '=', true)
       .load(pool);
 
-    if (!config) {
-      response.status(INVALID_PAYLOAD);
-      return response.json({
-        success: false,
-        message: 'La integracion con Dropi no esta habilitada'
-      });
+    if (config && config.api_key) {
+      token = config.api_key;
+      environment = config.environment || 'test';
+    } else {
+      // Fallback: read from EverShop setting table
+      const { getSetting } = await import('@evershop/evershop/setting/services');
+      token = await getSetting('dropiApiKey', null);
+      environment = (await getSetting('dropiEnvironment', 'test')) || 'test';
     }
-
-    const token = config.api_key;
-    const environment = config.environment || 'test';
 
     if (!token) {
       response.status(INVALID_PAYLOAD);
       return response.json({
         success: false,
-        message: 'Token de integracion Dropi no configurado'
+        message: 'Token de integracion Dropi no configurado. Configura tu token en Ajustes > Dropi.'
       });
     }
 

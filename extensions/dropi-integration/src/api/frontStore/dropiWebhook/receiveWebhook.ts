@@ -81,11 +81,23 @@ export default async (request, response) => {
       .load(pool);
 
     if (!config) {
-      response.status(OK);
-      return response.json({
-        success: false,
-        message: 'Integracion Dropi no habilitada'
-      });
+      // Fallback: check if configured via EverShop setting table
+      let hasToken = false;
+      try {
+        const { getSetting } = await import('@evershop/evershop/setting/services');
+        const settingToken = await getSetting('dropiApiKey', null);
+        hasToken = !!settingToken;
+      } catch {
+        // getSetting not available
+      }
+
+      if (!hasToken) {
+        response.status(OK);
+        return response.json({
+          success: false,
+          message: 'Integracion Dropi no habilitada'
+        });
+      }
     }
 
     // Buscar el registro de sync por dropi_order_id

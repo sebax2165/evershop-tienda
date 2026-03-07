@@ -22,3 +22,9 @@ extend type Query {
   dropiOrderSync(orderUuid: String!): DropiSync
   dropiProductMappings: [DropiProductMapping]
 }
+
+extend type Setting {
+  dropiApiKey: String
+  dropiEnvironment: String
+  dropiAutoSync: String
+}

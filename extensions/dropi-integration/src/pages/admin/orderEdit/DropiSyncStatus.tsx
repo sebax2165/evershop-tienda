@@ -47,7 +47,9 @@ export default function DropiSyncStatus({
   dropiSync
 }: DropiSyncStatusProps) {
   const [syncing, setSyncing] = useState(false);
+  const [generatingGuide, setGeneratingGuide] = useState(false);
   const [syncResult, setSyncResult] = useState<string | null>(null);
+  const [resultType, setResultType] = useState<'success' | 'error'>('success');
 
   const handleResync = async () => {
     setSyncing(true);
@@ -62,16 +64,52 @@ export default function DropiSyncStatus({
       );
       const data = await resp.json();
       if (data.success) {
+        setResultType('success');
         setSyncResult('Sincronizacion exitosa. Recarga la pagina para ver el estado actualizado.');
       } else {
+        setResultType('error');
         setSyncResult(`Error: ${data.message || 'Error desconocido'}`);
       }
     } catch (e) {
+      setResultType('error');
       setSyncResult(`Error de conexion: ${(e as Error).message}`);
     } finally {
       setSyncing(false);
     }
   };
+
+  const handleGenerateGuide = async () => {
+    setGeneratingGuide(true);
+    setSyncResult(null);
+    try {
+      const resp = await fetch(
+        `/api/admin/dropi/generate-guide/${order.uuid}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+      const data = await resp.json();
+      if (data.success) {
+        setResultType('success');
+        setSyncResult(data.message || 'Guia generada. Recarga la pagina para ver el numero.');
+      } else {
+        setResultType('error');
+        setSyncResult(`Error: ${data.message || 'Error desconocido'}`);
+      }
+    } catch (e) {
+      setResultType('error');
+      setSyncResult(`Error de conexion: ${(e as Error).message}`);
+    } finally {
+      setGeneratingGuide(false);
+    }
+  };
+
+  const canGenerateGuide =
+    dropiSync &&
+    dropiSync.status === 'synced' &&
+    dropiSync.dropiOrderId &&
+    !dropiSync.dropiGuideNumber;
 
   return (
     <Card>
@@ -96,7 +134,7 @@ export default function DropiSyncStatus({
             {dropiSync.dropiGuideNumber && (
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Numero de guia:</span>
-                <span className="text-sm font-mono">
+                <span className="text-sm font-mono font-semibold text-primary">
                   {dropiSync.dropiGuideNumber}
                 </span>
               </div>
@@ -133,20 +171,37 @@ export default function DropiSyncStatus({
         )}
 
         {syncResult && (
-          <div className="mt-3 p-2 bg-muted rounded text-sm">
+          <div
+            className={`mt-3 p-2 rounded text-sm ${
+              resultType === 'success'
+                ? 'bg-green-50 text-green-800 border border-green-200'
+                : 'bg-red-50 text-red-800 border border-red-200'
+            }`}
+          >
             {syncResult}
           </div>
         )}
 
-        <div className="mt-4">
+        <div className="mt-4 flex gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={handleResync}
-            disabled={syncing}
+            disabled={syncing || generatingGuide}
           >
             {syncing ? 'Sincronizando...' : 'Sincronizar con Dropi'}
           </Button>
+
+          {canGenerateGuide && (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleGenerateGuide}
+              disabled={syncing || generatingGuide}
+            >
+              {generatingGuide ? 'Generando...' : 'Generar Guia'}
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>
