@@ -1,8 +1,7 @@
-import { setPageMetaInfo } from '@evershop/evershop/cms/services';
-
 export default (request) => {
-  setPageMetaInfo(request, {
+  request.locals = request.locals || {};
+  request.locals.pageMetaInfo = {
     title: 'Pixeles de Seguimiento',
     description: 'Configuracion de Facebook Pixel y TikTok Pixel'
-  });
+  };
 };
