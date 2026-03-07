@@ -1,56 +1,85 @@
 import { execute } from '@evershop/postgres-query-builder';
 
 export default async (connection) => {
-  // ──────────────────────────────────────────────
-  // Table: cod_form_version
-  // Form Designer - visual form versions
-  // ──────────────────────────────────────────────
-  await execute(connection, `
-    CREATE TABLE IF NOT EXISTS "cod_form_version" (
-      "id" INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-      "store_id" INT DEFAULT 0,
-      "version_name" VARCHAR NOT NULL DEFAULT 'Default',
-      "is_active" BOOLEAN DEFAULT FALSE,
-      "bg_color" VARCHAR DEFAULT '#ffffff',
-      "text_color" VARCHAR DEFAULT '#1a1a2e',
-      "btn_bg_color" VARCHAR DEFAULT '#e63946',
-      "btn_text_color" VARCHAR DEFAULT '#ffffff',
-      "btn_hover_color" VARCHAR DEFAULT '#c1121f',
-      "border_radius" INT DEFAULT 8,
-      "custom_css" TEXT DEFAULT '',
-      "header_html" TEXT DEFAULT '',
-      "footer_html" TEXT DEFAULT '',
-      "assigned_products" TEXT DEFAULT '',
-      "assigned_collections" TEXT DEFAULT '',
-      "custom_button_text" VARCHAR DEFAULT 'Completar Pedido',
-      "created_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-      "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
+  // Add missing columns to cod_form_version if they don't exist
+  const columnsToAdd = [
+    { table: 'cod_form_version', column: 'text_color', type: "VARCHAR DEFAULT '#1a1a2e'" },
+    { table: 'cod_form_version', column: 'btn_hover_color', type: "VARCHAR DEFAULT '#c1121f'" },
+    { table: 'cod_form_version', column: 'header_html', type: "TEXT DEFAULT ''" },
+    { table: 'cod_form_version', column: 'footer_html', type: "TEXT DEFAULT ''" },
+    { table: 'cod_form_version', column: 'assigned_products', type: "TEXT DEFAULT ''" },
+    { table: 'cod_form_version', column: 'assigned_collections', type: "TEXT DEFAULT ''" },
+    { table: 'cod_form_version', column: 'custom_button_text', type: "VARCHAR DEFAULT 'Completar Pedido'" }
+  ];
 
-  // ──────────────────────────────────────────────
-  // Table: cod_form_custom_field
-  // Custom fields for form versions
-  // ──────────────────────────────────────────────
-  await execute(connection, `
-    CREATE TABLE IF NOT EXISTS "cod_form_custom_field" (
-      "id" INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-      "store_id" INT DEFAULT 0,
-      "form_version_id" INT NOT NULL,
-      "field_type" VARCHAR NOT NULL DEFAULT 'text',
-      "field_label" VARCHAR NOT NULL,
-      "field_placeholder" VARCHAR DEFAULT '',
-      "field_options" TEXT DEFAULT '',
-      "is_required" BOOLEAN DEFAULT FALSE,
-      "position" INT DEFAULT 0,
-      "is_active" BOOLEAN DEFAULT TRUE,
-      "created_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-      CONSTRAINT "FK_CUSTOM_FIELD_FORM_VERSION" FOREIGN KEY ("form_version_id") REFERENCES "cod_form_version" ("id") ON DELETE CASCADE
-    )
-  `);
+  for (const col of columnsToAdd) {
+    try {
+      await execute(
+        connection,
+        `ALTER TABLE "${col.table}" ADD COLUMN IF NOT EXISTS "${col.column}" ${col.type}`
+      );
+    } catch (e) {
+      // Column may already exist, ignore
+    }
+  }
 
-  await execute(connection, `
-    CREATE INDEX IF NOT EXISTS "IDX_CUSTOM_FIELD_VERSION"
-    ON "cod_form_custom_field" ("form_version_id", "position")
-  `);
+  // Add is_active column if missing (v1.0.0 used is_default)
+  try {
+    await execute(
+      connection,
+      `ALTER TABLE "cod_form_version" ADD COLUMN IF NOT EXISTS "is_active" BOOLEAN DEFAULT FALSE`
+    );
+  } catch (e) {
+    // ignore
+  }
+
+  // Add position column to cod_form_custom_field if missing (v1.0.0 used sort_order)
+  try {
+    await execute(
+      connection,
+      `ALTER TABLE "cod_form_custom_field" ADD COLUMN IF NOT EXISTS "position" INT DEFAULT 0`
+    );
+  } catch (e) {
+    // ignore
+  }
+
+  // Add is_active column to cod_form_custom_field if missing
+  try {
+    await execute(
+      connection,
+      `ALTER TABLE "cod_form_custom_field" ADD COLUMN IF NOT EXISTS "is_active" BOOLEAN DEFAULT TRUE`
+    );
+  } catch (e) {
+    // ignore
+  }
+
+  // Add field_label alias column if missing (v1.0.0 used label)
+  try {
+    await execute(
+      connection,
+      `ALTER TABLE "cod_form_custom_field" ADD COLUMN IF NOT EXISTS "field_label" VARCHAR DEFAULT ''`
+    );
+  } catch (e) {
+    // ignore
+  }
+
+  // Add field_placeholder column if missing (v1.0.0 used placeholder)
+  try {
+    await execute(
+      connection,
+      `ALTER TABLE "cod_form_custom_field" ADD COLUMN IF NOT EXISTS "field_placeholder" VARCHAR DEFAULT ''`
+    );
+  } catch (e) {
+    // ignore
+  }
+
+  // Add field_options column if missing (v1.0.0 used options as JSONB)
+  try {
+    await execute(
+      connection,
+      `ALTER TABLE "cod_form_custom_field" ADD COLUMN IF NOT EXISTS "field_options" TEXT DEFAULT ''`
+    );
+  } catch (e) {
+    // ignore
+  }
 };
