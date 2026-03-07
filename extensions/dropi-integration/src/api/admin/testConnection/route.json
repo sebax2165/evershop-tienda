@@ -1,0 +1,5 @@
+{
+  "methods": ["POST"],
+  "path": "/api/dropi/admin/test-connection",
+  "access": "private"
+}

@@ -7,6 +7,28 @@ import {
 import { useOneStepCheckout } from './useOneStepCheckout.js';
 
 // ---------------------------------------------------------------------------
+// Pixel event helper - fires Facebook & TikTok events safely
+// ---------------------------------------------------------------------------
+
+const firePixelEvent = (eventName: string, params?: Record<string, any>) => {
+  // Facebook Pixel
+  if (typeof window !== 'undefined' && (window as any).fbq) {
+    (window as any).fbq('track', eventName, params);
+  }
+  // TikTok Pixel
+  if (typeof window !== 'undefined' && (window as any).ttq) {
+    const ttqEventMap: Record<string, string> = {
+      'ViewContent': 'ViewContent',
+      'InitiateCheckout': 'InitiateCheckout',
+      'Lead': 'SubmitForm',
+      'Purchase': 'CompletePayment',
+      'AddToCart': 'AddToCart'
+    };
+    (window as any).ttq.track(ttqEventMap[eventName] || eventName, params);
+  }
+};
+
+// ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
@@ -201,6 +223,7 @@ export default function OneStepCheckout({
   const [postPurchaseTimer, setPostPurchaseTimer] = useState(0);
   const [paymentMode, setPaymentMode] = useState<'cod' | 'partial'>('cod');
   const formRef = useRef<HTMLFormElement>(null);
+  const hasTrackedInitiateCheckout = useRef(false);
 
   const { submitCheckout, loading: isSubmitting, error: checkoutError } = useOneStepCheckout({
     sku: product?.sku || ''
@@ -266,6 +289,30 @@ export default function OneStepCheckout({
     (value: number) => `${currencySymbol}${Math.round(value).toLocaleString()}`,
     [currencySymbol]
   );
+
+  // --- Pixel: ViewContent on mount ---
+  useEffect(() => {
+    if (product) {
+      firePixelEvent('ViewContent', {
+        content_name: product.name,
+        content_ids: [product.sku || String(product.productId)],
+        content_type: 'product',
+        value: basePrice,
+        currency: 'COP'
+      });
+    }
+  }, []);
+
+  // --- Pixel: InitiateCheckout on first form interaction ---
+  const handleFormInteraction = () => {
+    if (!hasTrackedInitiateCheckout.current) {
+      hasTrackedInitiateCheckout.current = true;
+      firePixelEvent('InitiateCheckout', {
+        value: grandTotal,
+        currency: 'COP'
+      });
+    }
+  };
 
   // --- Helpers ---
   const updateField = (field: keyof FormData, value: string) => {
@@ -360,6 +407,14 @@ export default function OneStepCheckout({
       firstErrorField?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
+
+    // --- Pixel: Lead event on form submission ---
+    firePixelEvent('Lead', {
+      content_name: product.name,
+      content_ids: [product.sku || String(product.productId)],
+      value: grandTotal,
+      currency: 'COP'
+    });
 
     const result = await submitCheckout(
       {
@@ -651,6 +706,7 @@ export default function OneStepCheckout({
               placeholder="Juan Perez"
               value={formData.full_name}
               onChange={(e) => updateField('full_name', e.target.value)}
+              onFocus={handleFormInteraction}
               autoComplete="name"
             />
             {errors.full_name && <span className="osc-field__error">{errors.full_name}</span>}
@@ -672,6 +728,7 @@ export default function OneStepCheckout({
                 placeholder="300 123 4567"
                 value={formData.telephone}
                 onChange={(e) => updateField('telephone', e.target.value)}
+                onFocus={handleFormInteraction}
                 autoComplete="tel-national"
               />
             </div>
