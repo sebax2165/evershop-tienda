@@ -119,7 +119,10 @@ export function useOneStepCheckout({ sku }: UseOneStepCheckoutOptions) {
       // Optional: customer_full_name, customer_email.
       // Response: { data: { cartId: <uuid>, items: [...], count: N } }
       // ------------------------------------------------------------------
-      const email = formData.email || `${formData.telephone.replace(/\s+/g, '')}@noemail.com`;
+      // Use customer email if provided, otherwise generate a placeholder
+      // based on the phone number. The domain is used internally only for
+      // EverShop's required email field and never for actual communications.
+      const email = formData.email || `cod.${formData.telephone.replace(/[^\d]/g, '')}@placeholder.local`;
 
       const cartRes = await fetch('/api/carts', {
         method: 'POST',

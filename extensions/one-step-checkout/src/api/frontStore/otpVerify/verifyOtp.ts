@@ -98,10 +98,11 @@ export default async (request, response) => {
       .where('setting_key', '=', 'otp_persist_days')
       .execute(pool);
 
-    const persistDays =
+    const rawPersistDays =
       persistSetting.length > 0
         ? parseInt(persistSetting[0].setting_value, 10)
-        : 30;
+        : 7;
+    const persistDays = Math.min(rawPersistDays, 30); // Cap at 30 days max
 
     // Create verification entry
     const expiresAt = new Date(
@@ -124,10 +125,11 @@ export default async (request, response) => {
       }
     });
   } catch (e) {
+    console.error('[OTP Verify] Error:', (e as Error).message);
     response.status(INTERNAL_SERVER_ERROR);
     return response.json({
       success: false,
-      message: e.message
+      message: 'Error al verificar el codigo'
     });
   }
 };

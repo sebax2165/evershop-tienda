@@ -56,10 +56,11 @@ export default async (request, response, next) => {
       uuid: result.uuid
     });
   } catch (e) {
+    console.error('[AbandonedOrder] Error:', (e as Error).message);
     response.status(INTERNAL_SERVER_ERROR);
     return response.json({
       success: false,
-      message: e.message
+      message: 'Error al guardar la informacion'
     });
   }
 };

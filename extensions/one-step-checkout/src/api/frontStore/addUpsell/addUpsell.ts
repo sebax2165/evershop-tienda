@@ -35,6 +35,19 @@ export default async (request, response, next) => {
       });
     }
 
+    // Verify the order was recently created (within 30 minutes) to prevent
+    // manipulation of old orders. Only the customer who just placed the order
+    // should be able to add upsells.
+    const orderAge = Date.now() - new Date(order.created_at).getTime();
+    const MAX_UPSELL_WINDOW_MS = 30 * 60 * 1000; // 30 minutes
+    if (orderAge > MAX_UPSELL_WINDOW_MS) {
+      response.status(403);
+      return response.json({
+        success: false,
+        message: 'Upsell window has expired'
+      });
+    }
+
     // Verify the upsell exists
     const upsell = await select()
       .from('cod_upsell')
@@ -65,12 +78,22 @@ export default async (request, response, next) => {
       });
     }
 
+    // Validate that the product is the configured offer product for this upsell
+    if (parseInt(product_id, 10) !== upsell.offer_product_id) {
+      response.status(INVALID_PAYLOAD);
+      return response.json({
+        success: false,
+        message: 'Product does not match upsell offer'
+      });
+    }
+
     const connection = await getConnection();
     await startTransaction(connection);
 
     try {
-      const itemQty = parseInt(qty, 10) || 1;
-      const itemPrice = parseFloat(price) || parseFloat(product.price) || 0;
+      const itemQty = Math.min(Math.max(parseInt(qty, 10) || 1, 1), 10);
+      // Use the product price from DB, not from user input
+      const itemPrice = parseFloat(product.price) || 0;
       const lineTotal = itemPrice * itemQty;
 
       // Add order item
@@ -106,10 +129,8 @@ export default async (request, response, next) => {
         .given({
           order_id: order.order_id,
           upsell_id: parseInt(upsell_id, 10),
-          product_id: parseInt(product_id, 10),
-          qty: itemQty,
-          price: itemPrice,
-          upsell_type: upsell.upsell_type,
+          event_type: 'accepted',
+          ab_variant: upsell.ab_variant || null,
           created_at: new Date().toISOString()
         })
         .execute(connection);
@@ -129,10 +150,11 @@ export default async (request, response, next) => {
       throw e;
     }
   } catch (e) {
+    console.error('[AddUpsell] Error:', (e as Error).message);
     response.status(INTERNAL_SERVER_ERROR);
     return response.json({
       success: false,
-      message: e.message
+      message: 'Error al procesar el upsell'
     });
   }
 };

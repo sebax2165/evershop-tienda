@@ -376,18 +376,36 @@ export default function OneStepCheckout({
     });
   };
 
-  const applyDiscount = () => {
+  const [applyingDiscount, setApplyingDiscount] = useState(false);
+
+  const applyDiscount = async () => {
     const code = formData.discountCode.trim().toUpperCase();
     if (!code) return;
-    // Mock discount logic - in production, validate against server
-    if (code === 'DESCUENTO10') {
-      setDiscountPercent(10);
-      setDiscountApplied(true);
-    } else if (code === 'DESCUENTO20') {
-      setDiscountPercent(20);
-      setDiscountApplied(true);
-    } else {
-      setErrors((prev) => ({ ...prev, discountCode: 'Codigo no valido' }));
+    setApplyingDiscount(true);
+    setErrors((prev) => ({ ...prev, discountCode: undefined }));
+    try {
+      const res = await fetch('/api/coupons/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ coupon: code })
+      });
+      const json = await res.json();
+      if (json.success && json.data?.discount_amount) {
+        setDiscountPercent(parseFloat(json.data.discount_amount));
+        setDiscountApplied(true);
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          discountCode: json.message || 'Codigo no valido'
+        }));
+      }
+    } catch {
+      setErrors((prev) => ({
+        ...prev,
+        discountCode: 'Error al validar el codigo. Intenta de nuevo.'
+      }));
+    } finally {
+      setApplyingDiscount(false);
     }
   };
 
@@ -432,6 +450,7 @@ export default function OneStepCheckout({
   // --- Submit ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
     if (!validate()) {
       // Scroll to first error
       const firstErrorField = formRef.current?.querySelector('.osc-field--error');
@@ -930,9 +949,9 @@ export default function OneStepCheckout({
                   type="button"
                   className="osc-discount-btn"
                   onClick={applyDiscount}
-                  disabled={!formData.discountCode.trim()}
+                  disabled={!formData.discountCode.trim() || applyingDiscount}
                 >
-                  Aplicar
+                  {applyingDiscount ? 'Validando...' : 'Aplicar'}
                 </button>
               </div>
             )}

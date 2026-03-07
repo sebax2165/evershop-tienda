@@ -1,4 +1,4 @@
 [
-  { "method": "GET", "path": "/admin/cod/shipping-rates", "access": "private" },
-  { "method": "POST", "path": "/admin/cod/shipping-rates", "access": "private" }
+  { "method": "GET", "path": "/api/admin/cod/shipping-rates", "access": "private" },
+  { "method": "POST", "path": "/api/admin/cod/shipping-rates", "access": "private" }
 ]

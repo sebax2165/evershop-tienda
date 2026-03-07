@@ -6,6 +6,9 @@ import {
   INVALID_PAYLOAD
 } from '@evershop/evershop/lib/util/httpStatus';
 
+const OTP_RATE_LIMIT_MAX = 3;
+const OTP_RATE_LIMIT_WINDOW_MINUTES = 15;
+
 export default async (request, response) => {
   try {
     const { phone } = request.body || {};
@@ -15,6 +18,24 @@ export default async (request, response) => {
       return response.json({
         success: false,
         message: 'Phone number is required'
+      });
+    }
+
+    // Rate limiting: max OTP_RATE_LIMIT_MAX requests per phone per window
+    const windowStart = new Date(
+      Date.now() - OTP_RATE_LIMIT_WINDOW_MINUTES * 60 * 1000
+    ).toISOString();
+    const recentOtps = await select('COUNT(*) as count')
+      .from('cod_otp_code')
+      .where('phone', '=', phone)
+      .andWhere('created_at', '>=', windowStart)
+      .load(pool);
+
+    if (recentOtps && parseInt(recentOtps.count, 10) >= OTP_RATE_LIMIT_MAX) {
+      response.status(429);
+      return response.json({
+        success: false,
+        message: `Demasiados intentos. Espera ${OTP_RATE_LIMIT_WINDOW_MINUTES} minutos antes de solicitar otro codigo.`
       });
     }
 
@@ -99,8 +120,10 @@ export default async (request, response) => {
         // Log the message
         await insert('cod_message_log')
           .given({
-            phone,
+            recipient: phone,
             category: logCategory,
+            message_type: 'otp',
+            provider: 'telesign',
             status: sent ? 'sent' : 'failed',
             created_at: new Date().toISOString()
           })
@@ -108,19 +131,21 @@ export default async (request, response) => {
 
         // Deduct from messaging credit balance
         if (sent) {
+          const balanceColumn = channel === 'whatsapp' ? 'balance_wa_auth' : 'balance_sms';
           await execute(
             pool,
-            `UPDATE cod_messaging_credit SET balance = balance - 1, updated_at = NOW() WHERE balance > 0`
+            `UPDATE cod_messaging_credit SET "${balanceColumn}" = "${balanceColumn}" - 1, updated_at = NOW() WHERE "${balanceColumn}" > 0`
           );
         }
       } catch (apiError) {
         // Log failure but don't break the flow
         await insert('cod_message_log')
           .given({
-            phone,
+            recipient: phone,
             category: channel === 'whatsapp' ? 'whatsapp_auth' : 'sms',
+            message_type: 'otp',
+            provider: 'telesign',
             status: 'error',
-            error_message: apiError.message,
             created_at: new Date().toISOString()
           })
           .execute(pool);
@@ -136,10 +161,11 @@ export default async (request, response) => {
       }
     });
   } catch (e) {
+    console.error('[OTP Send] Error:', (e as Error).message);
     response.status(INTERNAL_SERVER_ERROR);
     return response.json({
       success: false,
-      message: e.message
+      message: 'Error al enviar el codigo de verificacion'
     });
   }
 };

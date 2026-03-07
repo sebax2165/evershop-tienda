@@ -22,7 +22,7 @@ export default async (request, response, next) => {
         .load(pool);
 
       if (blockedByIp) {
-        response.status(OK);
+        response.status(403);
         return response.json({
           allowed: false,
           reason: 'IP address is blocked'
@@ -39,7 +39,7 @@ export default async (request, response, next) => {
         .load(pool);
 
       if (blockedByPhone) {
-        response.status(OK);
+        response.status(403);
         return response.json({
           allowed: false,
           reason: 'Phone number is blocked'
@@ -56,7 +56,7 @@ export default async (request, response, next) => {
         .load(pool);
 
       if (blockedByEmail) {
-        response.status(OK);
+        response.status(403);
         return response.json({
           allowed: false,
           reason: 'Email address is blocked'
@@ -115,7 +115,7 @@ export default async (request, response, next) => {
     }
 
     if (attemptCount >= maxAttempts) {
-      response.status(OK);
+      response.status(429);
       return response.json({
         allowed: false,
         reason: 'Too many order attempts in the last 24 hours'
@@ -128,10 +128,11 @@ export default async (request, response, next) => {
       reason: null
     });
   } catch (e) {
+    console.error('[FraudCheck] Error:', (e as Error).message);
     response.status(INTERNAL_SERVER_ERROR);
     return response.json({
       success: false,
-      message: e.message
+      message: 'Error interno al verificar la solicitud'
     });
   }
 };

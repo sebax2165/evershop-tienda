@@ -32,10 +32,11 @@ export default async (request, response, next) => {
       success: true
     });
   } catch (e) {
+    console.error('[RecordAttempt] Error:', (e as Error).message);
     response.status(INTERNAL_SERVER_ERROR);
     return response.json({
       success: false,
-      message: e.message
+      message: 'Error interno'
     });
   }
 };

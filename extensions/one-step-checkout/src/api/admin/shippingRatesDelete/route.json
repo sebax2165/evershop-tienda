@@ -1,3 +1,3 @@
 [
-  { "method": "DELETE", "path": "/admin/cod/shipping-rates/:rate_id", "access": "private" }
+  { "method": "DELETE", "path": "/api/admin/cod/shipping-rates/:rate_id", "access": "private" }
 ]

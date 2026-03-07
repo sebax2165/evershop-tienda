@@ -5,6 +5,7 @@ import {
   INTERNAL_SERVER_ERROR,
   INVALID_PAYLOAD
 } from '@evershop/evershop/lib/util/httpStatus';
+import crypto from 'crypto';
 
 /**
  * Mapa de estados Dropi a estados EverShop.
@@ -58,6 +59,45 @@ export default async (request, response) => {
       });
     }
 
+    // Verificar que la integracion esta habilitada
+    const config = await select()
+      .from('dropi_config')
+      .where('enabled', '=', true)
+      .load(pool);
+
+    // Validate webhook signature using the Dropi API key as HMAC secret
+    const webhookSecret =
+      process.env.DROPI_WEBHOOK_SECRET || config?.api_key || null;
+    if (webhookSecret) {
+      const signature = request.headers['x-dropi-signature'] as string;
+      if (signature) {
+        const rawBody =
+          typeof payload === 'string' ? payload : JSON.stringify(payload);
+        const computed = crypto
+          .createHmac('sha256', webhookSecret)
+          .update(rawBody)
+          .digest('hex');
+        const isValid =
+          signature.length === computed.length &&
+          crypto.timingSafeEqual(
+            Buffer.from(signature),
+            Buffer.from(computed)
+          );
+        if (!isValid) {
+          console.warn('[Dropi Webhook] Firma HMAC invalida');
+          response.status(401);
+          return response.json({
+            success: false,
+            message: 'Firma de webhook invalida'
+          });
+        }
+      } else {
+        console.warn(
+          '[Dropi Webhook] Webhook recibido sin header x-dropi-signature'
+        );
+      }
+    }
+
     // Extraer campos del payload oficial de Dropi
     const dropiOrderId = payload.id;
     const dropiStatus = payload.status;
@@ -73,12 +113,6 @@ export default async (request, response) => {
         message: 'Falta el ID del pedido Dropi (campo "id") en el webhook'
       });
     }
-
-    // Verificar que la integracion esta habilitada
-    const config = await select()
-      .from('dropi_config')
-      .where('enabled', '=', true)
-      .load(pool);
 
     if (!config) {
       // Fallback: check if configured via EverShop setting table
@@ -205,10 +239,11 @@ export default async (request, response) => {
       '[Dropi Webhook] Error procesando webhook:',
       (e as Error).message
     );
+    console.error('[Dropi Webhook] Error:', (e as Error).message);
     response.status(INTERNAL_SERVER_ERROR);
     return response.json({
       success: false,
-      message: (e as Error).message
+      message: 'Error procesando webhook'
     });
   }
 };

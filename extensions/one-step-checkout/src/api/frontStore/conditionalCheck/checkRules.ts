@@ -25,10 +25,16 @@ export default async (request, response) => {
       .execute(pool);
 
     for (const rule of rules) {
-      const conditions =
-        typeof rule.conditions === 'string'
-          ? JSON.parse(rule.conditions)
-          : rule.conditions;
+      let conditions;
+      try {
+        conditions =
+          typeof rule.conditions === 'string'
+            ? JSON.parse(rule.conditions)
+            : rule.conditions;
+      } catch {
+        // Skip rules with malformed JSON conditions
+        continue;
+      }
 
       let matched = false;
 
@@ -103,10 +109,11 @@ export default async (request, response) => {
       }
     });
   } catch (e) {
+    console.error('[ConditionalCheck] Error:', (e as Error).message);
     response.status(INTERNAL_SERVER_ERROR);
     return response.json({
       success: false,
-      message: e.message
+      message: 'Error al verificar las reglas'
     });
   }
 };

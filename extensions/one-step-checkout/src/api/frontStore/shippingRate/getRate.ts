@@ -49,14 +49,15 @@ export default async (request, response, next) => {
       success: true,
       rates: rates.map((r) => ({
         name: r.name,
-        amount: parseFloat(r.amount)
+        amount: parseFloat(r.rate_amount)
       }))
     });
   } catch (e) {
+    console.error('[ShippingRate] Error:', (e as Error).message);
     response.status(INTERNAL_SERVER_ERROR);
     return response.json({
       success: false,
-      message: e.message
+      message: 'Error al calcular la tarifa de envio'
     });
   }
 };
