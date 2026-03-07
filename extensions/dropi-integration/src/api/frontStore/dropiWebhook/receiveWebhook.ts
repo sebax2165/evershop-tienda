@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import { select, update } from '@evershop/postgres-query-builder';
 import { pool } from '@evershop/evershop/lib/postgres';
 import {
@@ -9,17 +8,44 @@ import {
 
 /**
  * Mapa de estados Dropi a estados EverShop.
- * Ajustar segun los estados configurados en tu tienda.
+ * Basado en la documentacion oficial del webhook de Dropi.
  */
-const DROPI_TO_EVERSHOP_STATUS: Record<string, string | null> = {
-  ENVIADO: 'processing',
-  ENTREGADO: 'complete',
-  DEVUELTO: 'canceled',
-  CANCELADO: 'canceled',
-  EN_BODEGA: 'processing',
-  PENDIENTE: 'pending'
+const DROPI_TO_EVERSHOP: Record<
+  string,
+  { payment_status?: string; shipment_status?: string } | null
+> = {
+  PENDIENTE: { shipment_status: 'unfulfilled' },
+  GUIA_GENERADA: { shipment_status: 'unfulfilled' },
+  EN_BODEGA: { shipment_status: 'unfulfilled' },
+  ENVIADO: { shipment_status: 'shipping' },
+  ENTREGADO: { payment_status: 'paid', shipment_status: 'delivered' },
+  DEVUELTO: { shipment_status: 'returned' },
+  CANCELADO: { shipment_status: 'returned' }
 };
 
+/**
+ * Webhook de Dropi para recibir actualizaciones de estado de ordenes.
+ *
+ * Segun la doc oficial, el payload tiene este formato:
+ * {
+ *   "id": 28593481,           // Numero de Orden Dropi
+ *   "status": "ESTADO",       // Estado de la orden
+ *   "name": "...",
+ *   "surname": "...",
+ *   "dir": "...",
+ *   "phone": "...",
+ *   "total_order": "79000.00",
+ *   "state": "DEPARTAMENTO",
+ *   "city": "CIUDAD",
+ *   "rate_type": "CON RECAUDO",
+ *   "shipping_company": "...",
+ *   "shipping_guide": "...",   // Numero de guia
+ *   "sticker": "...",          // Nombre del archivo PDF
+ *   "shop_order_id": "...",    // ID de la orden en nuestra tienda
+ *   "orderdetails": [...],
+ *   ...
+ * }
+ */
 export default async (request, response) => {
   try {
     const payload = request.body;
@@ -32,30 +58,23 @@ export default async (request, response) => {
       });
     }
 
-    // Validate that we have the required fields
-    const dropiOrderId =
-      payload.order_id ||
-      payload.id ||
-      payload.data?.order_id ||
-      payload.data?.id;
-    const dropiStatus =
-      payload.status ||
-      payload.data?.status ||
-      payload.state;
-    const guideNumber =
-      payload.guide_number ||
-      payload.data?.guide_number ||
-      null;
+    // Extraer campos del payload oficial de Dropi
+    const dropiOrderId = payload.id;
+    const dropiStatus = payload.status;
+    const guideNumber = payload.shipping_guide || null;
+    const sticker = payload.sticker || null;
+    const shippingCompany = payload.shipping_company || null;
+    const shopOrderId = payload.shop_order_id || null;
 
     if (!dropiOrderId) {
       response.status(INVALID_PAYLOAD);
       return response.json({
         success: false,
-        message: 'Falta el ID del pedido Dropi en el webhook'
+        message: 'Falta el ID del pedido Dropi (campo "id") en el webhook'
       });
     }
 
-    // Verify webhook authenticity using the configured API key
+    // Verificar que la integracion esta habilitada
     const config = await select()
       .from('dropi_config')
       .where('enabled', '=', true)
@@ -69,48 +88,45 @@ export default async (request, response) => {
       });
     }
 
-    // Optional: verify webhook signature if Dropi sends one
-    const webhookSignature = request.headers['x-dropi-signature'];
-    if (webhookSignature && config.api_key) {
-      const expectedSignature = crypto
-        .createHash('sha256')
-        .update(`${config.api_key}:${dropiOrderId}`)
-        .digest('hex');
-
-      if (webhookSignature !== expectedSignature) {
-        console.warn('[Dropi Webhook] Firma de webhook invalida');
-        response.status(INVALID_PAYLOAD);
-        return response.json({
-          success: false,
-          message: 'Firma de webhook invalida'
-        });
-      }
-    }
-
-    // Find the sync record
-    const syncRecord = await select()
+    // Buscar el registro de sync por dropi_order_id
+    let syncRecord = await select()
       .from('dropi_order_sync')
       .where('dropi_order_id', '=', String(dropiOrderId))
       .orderBy('sync_id', 'DESC')
       .load(pool);
 
-    if (!syncRecord) {
-      // Try to find by shop_order_id in the payload
-      const shopOrderId = payload.shop_order_id || payload.data?.shop_order_id;
-      if (shopOrderId) {
-        console.info(
-          `[Dropi Webhook] Pedido Dropi ${dropiOrderId} no encontrado por ID, buscando por shop_order_id: ${shopOrderId}`
-        );
-      }
+    // Si no se encuentra por dropi_order_id, intentar por shop_order_id
+    if (!syncRecord && shopOrderId) {
+      // shop_order_id tiene formato "EV-{order_number}"
+      const orderNumber = shopOrderId.replace(/^EV-/, '');
+      if (orderNumber) {
+        const order = await select()
+          .from('order')
+          .where('order_number', '=', orderNumber)
+          .load(pool);
 
+        if (order) {
+          syncRecord = await select()
+            .from('dropi_order_sync')
+            .where('evershop_order_id', '=', order.order_id)
+            .orderBy('sync_id', 'DESC')
+            .load(pool);
+        }
+      }
+    }
+
+    if (!syncRecord) {
+      console.info(
+        `[Dropi Webhook] Pedido Dropi ${dropiOrderId} no tiene registro de sincronizacion`
+      );
       response.status(OK);
       return response.json({
         success: true,
-        message: `Pedido Dropi ${dropiOrderId} no tiene registro de sincronizacion`
+        message: `Pedido Dropi ${dropiOrderId} recibido pero sin registro de sync`
       });
     }
 
-    // Update the sync record
+    // Actualizar el registro de sync
     const updateData: Record<string, any> = {
       updated_at: new Date().toISOString()
     };
@@ -118,42 +134,45 @@ export default async (request, response) => {
     if (dropiStatus) {
       updateData.dropi_status = dropiStatus;
     }
-
     if (guideNumber) {
       updateData.dropi_guide_number = String(guideNumber);
     }
+    // Guardar el response completo del webhook para referencia
+    updateData.response_payload = JSON.stringify(payload);
 
     await update('dropi_order_sync')
       .given(updateData)
       .where('sync_id', '=', syncRecord.sync_id)
       .execute(pool);
 
-    // Optionally update the EverShop order status
+    // Actualizar el estado del pedido en EverShop
     if (dropiStatus) {
       const normalizedStatus = dropiStatus.toUpperCase().replace(/\s+/g, '_');
-      const evershopStatus = DROPI_TO_EVERSHOP_STATUS[normalizedStatus];
+      const statusMapping = DROPI_TO_EVERSHOP[normalizedStatus];
 
-      if (evershopStatus) {
+      if (statusMapping) {
         try {
-          await update('order')
-            .given({
-              payment_status: evershopStatus === 'complete' ? 'paid' : undefined,
-              shipment_status:
-                evershopStatus === 'complete'
-                  ? 'delivered'
-                  : evershopStatus === 'processing'
-                    ? 'shipping'
-                    : undefined
-            })
-            .where('order_id', '=', syncRecord.evershop_order_id)
-            .execute(pool);
+          const orderUpdate: Record<string, any> = {};
+          if (statusMapping.payment_status) {
+            orderUpdate.payment_status = statusMapping.payment_status;
+          }
+          if (statusMapping.shipment_status) {
+            orderUpdate.shipment_status = statusMapping.shipment_status;
+          }
 
-          console.info(
-            `[Dropi Webhook] Pedido EverShop ${syncRecord.evershop_order_id} actualizado a estado: ${evershopStatus}`
-          );
+          if (Object.keys(orderUpdate).length > 0) {
+            await update('order')
+              .given(orderUpdate)
+              .where('order_id', '=', syncRecord.evershop_order_id)
+              .execute(pool);
+
+            console.info(
+              `[Dropi Webhook] Pedido EverShop ${syncRecord.evershop_order_id} actualizado: ${JSON.stringify(orderUpdate)}`
+            );
+          }
         } catch (orderUpdateErr) {
           console.error(
-            '[Dropi Webhook] Error actualizando estado del pedido EverShop:',
+            '[Dropi Webhook] Error actualizando estado del pedido:',
             (orderUpdateErr as Error).message
           );
         }
@@ -161,7 +180,7 @@ export default async (request, response) => {
     }
 
     console.info(
-      `[Dropi Webhook] Webhook procesado para pedido Dropi ${dropiOrderId}, estado: ${dropiStatus || 'sin cambio'}`
+      `[Dropi Webhook] Procesado: Dropi #${dropiOrderId}, estado: ${dropiStatus || 'sin cambio'}, guia: ${guideNumber || 'n/a'}`
     );
 
     response.status(OK);
@@ -170,7 +189,10 @@ export default async (request, response) => {
       message: 'Webhook procesado correctamente'
     });
   } catch (e) {
-    console.error('[Dropi Webhook] Error procesando webhook:', (e as Error).message);
+    console.error(
+      '[Dropi Webhook] Error procesando webhook:',
+      (e as Error).message
+    );
     response.status(INTERNAL_SERVER_ERROR);
     return response.json({
       success: false,

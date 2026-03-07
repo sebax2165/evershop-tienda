@@ -232,17 +232,115 @@ export async function createDropiOrder(
 
 /**
  * Lista pedidos en Dropi.
+ * Segun la doc oficial, usa GET con body params:
+ * result_number, start, textToSearch, from, untill, status,
+ * filter_date_by (REQUERIDO: "FECHA DE CREADO")
  */
 export async function getDropiOrders(
   params: Record<string, any>,
   token: string,
   environment: string
 ): Promise<any> {
-  const queryString = new URLSearchParams(params).toString();
+  // Dropi GET /orders/myorders acepta params en query string
+  const queryParams: Record<string, string> = {};
+  if (params.result_number) queryParams.result_number = String(params.result_number);
+  if (params.start) queryParams.start = String(params.start);
+  if (params.textToSearch) queryParams.textToSearch = params.textToSearch;
+  if (params.from) queryParams.from = params.from;
+  if (params.untill) queryParams.untill = params.untill;
+  if (params.status) queryParams.status = params.status;
+  if (params.filter_date_by) queryParams.filter_date_by = params.filter_date_by;
+  if (params.orderBy) queryParams.orderBy = params.orderBy;
+  if (params.orderDirection) queryParams.orderDirection = params.orderDirection;
+  if (params.filter_by) queryParams.filter_by = params.filter_by;
+  if (params.value_filter_by) queryParams.value_filter_by = params.value_filter_by;
+
+  const queryString = new URLSearchParams(queryParams).toString();
   const endpoint = queryString
     ? `/orders/myorders?${queryString}`
     : '/orders/myorders';
   return dropiRequest(endpoint, 'GET', null, token, environment);
+}
+
+/**
+ * Genera guia para un pedido en Dropi.
+ * PUT /orders/myorders/:idOrden con body {"status": "GUIA_GENERADA"}
+ */
+export async function generateDropiGuide(
+  dropiOrderId: string | number,
+  token: string,
+  environment: string
+): Promise<any> {
+  return dropiRequest(
+    `/orders/myorders/${dropiOrderId}`,
+    'PUT',
+    { status: 'GUIA_GENERADA' },
+    token,
+    environment
+  );
+}
+
+/**
+ * Obtiene un producto especifico de Dropi por ID.
+ * GET /products/v2/:idProducto
+ */
+export async function getDropiProductById(
+  productId: number | string,
+  token: string,
+  environment: string
+): Promise<any> {
+  return dropiRequest(
+    `/products/v2/${productId}`,
+    'GET',
+    null,
+    token,
+    environment
+  );
+}
+
+/**
+ * Obtiene una orden especifica por numero de guia.
+ * GET /orders/myorderbyguide/:guia
+ */
+export async function getDropiOrderByGuide(
+  guideNumber: string,
+  token: string,
+  environment: string
+): Promise<any> {
+  return dropiRequest(
+    `/orders/myorderbyguide/${guideNumber}`,
+    'GET',
+    null,
+    token,
+    environment
+  );
+}
+
+/**
+ * Genera guias de forma masiva.
+ * POST /orders/myorder/masive con array de {id, status: "GUIA_GENERADA"}
+ */
+export async function generateDropiGuidesMassive(
+  orderIds: number[],
+  token: string,
+  environment: string
+): Promise<any> {
+  const body = orderIds.map((id) => ({
+    id,
+    status: 'GUIA_GENERADA'
+  }));
+  return dropiRequest('/orders/myorder/masive', 'POST', body as any, token, environment);
+}
+
+/**
+ * Lista categorias de Dropi.
+ * GET /categories
+ */
+export async function getDropiCategories(
+  token: string,
+  environment: string
+): Promise<any> {
+  return dropiRequest('/categories', 'GET', null, token, environment);
 }
 
 /**
