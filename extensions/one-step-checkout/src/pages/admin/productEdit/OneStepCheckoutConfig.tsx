@@ -212,13 +212,7 @@ const CheckoutConfigForm: React.FC<CheckoutConfigFormProps> = ({
   );
 };
 
-interface OneStepCheckoutConfigProps {
-  saveCheckoutConfigApi: string;
-}
-
-export default function OneStepCheckoutConfig({
-  saveCheckoutConfigApi
-}: OneStepCheckoutConfigProps) {
+export default function OneStepCheckoutConfig() {
   const [result] = useQuery({
     query: CHECKOUT_CONFIG_QUERY
   });
@@ -256,11 +250,13 @@ export default function OneStepCheckoutConfig({
     return null;
   }
 
+  const saveApi = `/admin/products/${product.productId}/checkout-config`;
+
   return (
     <CheckoutConfigForm
       productId={product.productId}
       config={product.checkoutConfig}
-      saveApi={saveCheckoutConfigApi}
+      saveApi={saveApi}
     />
   );
 }
@@ -270,8 +266,4 @@ export const layout = {
   sortOrder: 50
 };
 
-export const query = `
-  query Query {
-    saveCheckoutConfigApi: url(routeId: "saveProductCheckoutConfig", params: [{key: "product_id", value: getContextValue("productId")}])
-  }
-`;
+export const query = ``;
