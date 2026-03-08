@@ -1,0 +1,5 @@
+{
+  "methods": ["GET", "POST"],
+  "path": "/dropi/admin/product-mapping",
+  "access": "private"
+}

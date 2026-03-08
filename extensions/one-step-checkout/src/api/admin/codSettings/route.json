@@ -1,4 +1,0 @@
-[
-  { "method": "GET", "path": "/api/admin/cod/settings", "access": "private" },
-  { "method": "POST", "path": "/api/admin/cod/settings", "access": "private" }
-]

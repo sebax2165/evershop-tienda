@@ -1,1 +1,0 @@
-[{ "method": "GET", "path": "/api/cod/partial-payment-config/:product_id", "access": "public" }]

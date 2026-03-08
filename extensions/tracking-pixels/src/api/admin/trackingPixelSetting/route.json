@@ -1,7 +1,0 @@
-[
-  {
-    "method": "POST",
-    "path": "/admin/setting/tracking-pixels",
-    "access": "private"
-  }
-]

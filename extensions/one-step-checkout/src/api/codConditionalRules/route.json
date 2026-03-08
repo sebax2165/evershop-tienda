@@ -1,0 +1,1 @@
+{"methods": ["GET", "POST", "DELETE"], "path": "/admin/cod/conditional-rules", "access": "private"}

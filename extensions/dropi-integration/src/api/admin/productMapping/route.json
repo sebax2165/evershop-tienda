@@ -1,4 +1,0 @@
-[
-  { "methods": ["GET"], "path": "/api/dropi/admin/product-mapping", "access": "private" },
-  { "methods": ["POST"], "path": "/api/dropi/admin/product-mapping", "access": "private" }
-]

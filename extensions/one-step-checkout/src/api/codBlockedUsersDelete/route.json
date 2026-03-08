@@ -1,0 +1,1 @@
+{"methods": ["DELETE"], "path": "/admin/cod/blocked-users/:block_id", "access": "private"}

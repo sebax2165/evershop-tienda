@@ -1,5 +1,5 @@
 {
   "methods": ["GET"],
-  "path": "/cod/quantity-offers",
+  "path": "/dropi/admin/sync-log",
   "access": "private"
 }

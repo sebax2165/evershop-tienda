@@ -1,5 +1,0 @@
-{
-  "methods": ["GET"],
-  "path": "/api/admin/cod/dashboard-stats",
-  "access": "private"
-}

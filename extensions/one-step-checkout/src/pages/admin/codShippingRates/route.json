@@ -1,5 +1,5 @@
 {
   "methods": ["GET"],
-  "path": "/admin/cod/shipping-rates",
+  "path": "/cod/shipping-rates",
   "access": "private"
 }

@@ -1,4 +1,0 @@
-[
-  { "method": "GET", "path": "/admin/cod/form-designer", "access": "private" },
-  { "method": "POST", "path": "/admin/cod/form-designer", "access": "private" }
-]

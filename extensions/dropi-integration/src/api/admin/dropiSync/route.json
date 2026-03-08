@@ -1,5 +1,0 @@
-{
-  "methods": ["POST"],
-  "path": "/api/admin/dropi/sync/:order_id",
-  "access": "private"
-}

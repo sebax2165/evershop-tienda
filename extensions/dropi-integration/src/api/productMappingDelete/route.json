@@ -1,0 +1,5 @@
+{
+  "methods": ["DELETE"],
+  "path": "/dropi/admin/product-mapping/:map_id",
+  "access": "private"
+}

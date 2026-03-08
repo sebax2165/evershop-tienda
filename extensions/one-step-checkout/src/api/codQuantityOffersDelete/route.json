@@ -1,0 +1,1 @@
+{"methods": ["DELETE"], "path": "/admin/cod/quantity-offers/:offer_id", "access": "private"}

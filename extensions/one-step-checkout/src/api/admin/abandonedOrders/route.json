@@ -1,3 +1,0 @@
-[
-  { "method": "GET", "path": "/api/admin/cod/abandoned-orders", "access": "private" }
-]
