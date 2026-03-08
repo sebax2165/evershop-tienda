@@ -17,8 +17,8 @@ import { useQuery } from 'urql';
 import { toast } from 'react-toastify';
 
 const CHECKOUT_CONFIG_QUERY = `
-  query Query {
-    product(id: getContextValue("productId", null)) {
+  query Query($productId: ID!) {
+    product(id: $productId) {
       productId
       checkoutConfig {
         enabled
@@ -212,9 +212,15 @@ const CheckoutConfigForm: React.FC<CheckoutConfigFormProps> = ({
   );
 };
 
-export default function OneStepCheckoutConfig() {
+export default function OneStepCheckoutConfig({
+  product
+}: {
+  product: { productId: number };
+}) {
   const [result] = useQuery({
-    query: CHECKOUT_CONFIG_QUERY
+    query: CHECKOUT_CONFIG_QUERY,
+    variables: { productId: product?.productId },
+    pause: !product?.productId
   });
 
   const { data, fetching, error } = result;
@@ -245,17 +251,17 @@ export default function OneStepCheckoutConfig() {
     );
   }
 
-  const product = data?.product;
-  if (!product) {
+  const productData = data?.product;
+  if (!productData) {
     return null;
   }
 
-  const saveApi = `/admin/products/${product.productId}/checkout-config`;
+  const saveApi = `/admin/products/${productData.productId}/checkout-config`;
 
   return (
     <CheckoutConfigForm
-      productId={product.productId}
-      config={product.checkoutConfig}
+      productId={productData.productId}
+      config={productData.checkoutConfig}
       saveApi={saveApi}
     />
   );
@@ -266,4 +272,10 @@ export const layout = {
   sortOrder: 50
 };
 
-export const query = ``;
+export const query = `
+  query Query {
+    product(id: getContextValue("productId", null)) {
+      productId
+    }
+  }
+`;

@@ -43,17 +43,14 @@ export default {
     },
 
     dropiProductMappings: async (_root: any, _args: any, { pool }: any) => {
-      const mappings = await select()
-        .from('dropi_product_map')
-        .leftJoin('product')
-        .on('dropi_product_map.evershop_product_id', '=', 'product.product_id')
-        .leftJoin('product_description')
-        .on(
-          'product.product_id',
-          '=',
-          'product_description.product_description_product_id'
-        )
-        .execute(pool);
+      const query = select().from('dropi_product_map');
+      query.leftJoin('product').on('dropi_product_map.evershop_product_id', '=', 'product.product_id');
+      query.leftJoin('product_description').on(
+        'product.product_id',
+        '=',
+        'product_description.product_description_product_id'
+      );
+      const mappings = await query.execute(pool);
 
       return mappings.map((m: any) => ({
         mapId: m.map_id,

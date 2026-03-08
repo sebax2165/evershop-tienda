@@ -8,13 +8,11 @@ import {
 export default async (request, response) => {
   try {
     // Obtener los ultimos 50 registros de sincronizacion con datos del pedido
-    const syncRecords = await select()
-      .from('dropi_order_sync')
-      .leftJoin('order')
-      .on('dropi_order_sync.evershop_order_id', '=', 'order.order_id')
-      .orderBy('dropi_order_sync.created_at', 'DESC')
-      .limit(0, 50)
-      .execute(pool);
+    const query = select().from('dropi_order_sync');
+    query.leftJoin('order').on('dropi_order_sync.evershop_order_id', '=', 'order.order_id');
+    query.orderBy('dropi_order_sync.created_at', 'DESC');
+    query.limit(0, 50);
+    const syncRecords = await query.execute(pool);
 
     const result = syncRecords.map((r: any) => ({
       sync_id: r.sync_id,
