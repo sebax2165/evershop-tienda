@@ -39,7 +39,7 @@ export default function FacebookPixel({
 
   return (
     <>
-      <script dangerouslySetInnerHTML={{ __html: pixelScript }} />
+      <script async dangerouslySetInnerHTML={{ __html: pixelScript }} />
       <noscript>
         <img
           height="1"

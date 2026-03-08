@@ -21,7 +21,7 @@ export function Image({
   height,
   alt,
   quality = 75,
-  loading = 'eager',
+  loading = 'lazy',
   decoding = 'async',
   priority = false,
   sizes = '100vw',

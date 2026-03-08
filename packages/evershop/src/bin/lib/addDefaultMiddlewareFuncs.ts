@@ -1,4 +1,5 @@
 import { select } from '@evershop/postgres-query-builder';
+import compression from 'compression';
 import sessionStorage from 'connect-pg-simple';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
@@ -19,26 +20,31 @@ import { setPageMetaInfo } from '../../modules/cms/services/pageMetaInfo.js';
 import { getDevMiddleware, getHotMiddleware } from './devEnvHelper.js';
 
 export function addDefaultMiddlewareFuncs(app) {
+  app.use(compression());
   app.use((request, response, next) => {
-    response.debugMiddlewares = [];
+    if (process.env.NODE_ENV !== 'production') {
+      response.debugMiddlewares = [];
+    }
     next();
-    response.on('finish', () => {
-      // Console log the debug middlewares
-      let message = `[${request.method}] ${request.originalUrl}\n`;
-      response.debugMiddlewares.forEach((m) => {
-        message += m.time
-          ? `-> Middleware ${m.id} - ${m.time} ms\n`
-          : `-> Middleware ${m.id}\n`;
+    if (process.env.NODE_ENV !== 'production') {
+      response.on('finish', () => {
+        // Console log the debug middlewares
+        let message = `[${request.method}] ${request.originalUrl}\n`;
+        response.debugMiddlewares.forEach((m) => {
+          message += m.time
+            ? `-> Middleware ${m.id} - ${m.time} ms\n`
+            : `-> Middleware ${m.id}\n`;
+        });
+        // Skip logging if the request is for static files
+        if (
+          request.currentRoute?.id === 'staticAsset' ||
+          request.currentRoute?.id === 'adminStaticAsset'
+        ) {
+          return;
+        }
+        debug(message);
       });
-      // Skip logging if the request is for static files
-      if (
-        request.currentRoute?.id === 'staticAsset' ||
-        request.currentRoute?.id === 'adminStaticAsset'
-      ) {
-        return;
-      }
-      debug(message);
-    });
+    }
   });
   // Add public static middleware
   app.use(publicStatic);

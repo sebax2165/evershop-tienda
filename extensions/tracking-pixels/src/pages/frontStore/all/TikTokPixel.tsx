@@ -33,7 +33,7 @@ export default function TikTokPixel({ trackingSettings }: TikTokPixelProps) {
     }(window, document, 'ttq');
   `;
 
-  return <script dangerouslySetInnerHTML={{ __html: pixelScript }} />;
+  return <script async dangerouslySetInnerHTML={{ __html: pixelScript }} />;
 }
 
 export const layout = {

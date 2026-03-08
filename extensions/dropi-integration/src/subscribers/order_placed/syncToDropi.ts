@@ -130,11 +130,21 @@ export default async function syncToDropi(data: OrderPlacedData) {
 
     const unmappedProducts: string[] = [];
 
+    // Batch query: fetch all product mappings in one query instead of N+1
+    const productIds = orderItems.map((item) => item.product_id);
+    const allMappings = await select()
+      .from('dropi_product_map')
+      .where('evershop_product_id', 'IN', productIds)
+      .execute(pool);
+
+    // Index mappings by evershop_product_id for fast lookup
+    const mappingsByProductId: Record<string, any> = {};
+    for (const mapping of allMappings) {
+      mappingsByProductId[mapping.evershop_product_id] = mapping;
+    }
+
     for (const item of orderItems) {
-      const mapping = await select()
-        .from('dropi_product_map')
-        .where('evershop_product_id', '=', item.product_id)
-        .load(pool);
+      const mapping = mappingsByProductId[item.product_id];
 
       if (mapping) {
         dropiProducts.push({

@@ -194,11 +194,10 @@ export function createBaseConfig(isServer) {
           compress: true,
           mangle: true,
           module: true,
-          sourceMap: true,
+          sourceMap: false,
           keep_classnames: false,
           keep_fnames: false,
-          safari10: true,
-          sourceMap: true
+          safari10: true
         })
       ]
     });
